@@ -12,6 +12,7 @@ export async function main(ns: ns.NS) {
     });
     const port = ns.getPortHandle(portUsed);
     port.clear();
+    await port.write(targetServer)
     const grow = "/infect/worms/grow.js";
     const hack = "/infect/worms/hack.js";
     const weaken = "/infect/worms/weaken.js";
@@ -21,8 +22,8 @@ export async function main(ns: ns.NS) {
         if (ns.getServerMoneyAvailable(targetServer) < minMoney) {
             ns.print(`Growing ${targetServer}'s money.`);
             while (true) {
-                await ns.sleep(1);
                 await port.write(targetServer)
+                await ns.sleep(1);
                 await deployScript(ns, grow, targetServer, portUsed);
                 await port.nextWrite();
                 port.clear();
@@ -33,8 +34,8 @@ export async function main(ns: ns.NS) {
         if (ns.getServerSecurityLevel(targetServer) > ns.getServerMinSecurityLevel(targetServer) * 1.5) {
             ns.print(`Weakening ${targetServer}.`);
             while (true) {
-                await ns.sleep(1);
                 await port.write(targetServer)
+                await ns.sleep(1);
                 await deployScript(ns, weaken, targetServer, portUsed);
                 await port.nextWrite();
                 port.clear();
@@ -42,10 +43,10 @@ export async function main(ns: ns.NS) {
                     break;
             }
         }
+        ns.print(`Hacking ${targetServer}.`);
         while (true) {
-            ns.print(`Hacking ${targetServer}.`);
-            await ns.sleep(1);
             await port.write(targetServer)
+            await ns.sleep(1);
             await deployScript(ns, hack, targetServer, portUsed);
             await port.nextWrite();
             port.clear();

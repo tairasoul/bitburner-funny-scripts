@@ -8,12 +8,11 @@ export async function main(ns: ns.NS) {
         await infectServer(ns, server.name, infectedServers);
         await processServers(ns, server, infectedServers);
     }
-    ns.toast("completed processing of server list", "success", 10000);
-    await ns.sleep(1000);
     const elements = [];
     for (const value of infectedServers.values())
         elements.push(value);
-    ns.toast(`hacked servers: ${elements.join(", ")}`, "success", 10000)
+    ns.toast(`hacked servers: ${elements.join(", ")}`, "info", 3000)
+    ns.toast("completed processing of server list", "success", 2000);
 }
 
 async function processServers(ns: ns.NS, map: ServerInfo, infectedSet: Set<string>) {
@@ -31,8 +30,8 @@ async function infectServer(ns: ns.NS, server: string, infectedSet: Set<string>)
         if (result.nuke) {
             if (!ns.fileExists(`/lock/controllers/${server}.txt`)) {
                 ns.scp([script, "/port-registry/classes/multiport.js", "/port-registry/classes/communicator.js"], "Controller-Central")
-                ns.exec(script, "Controller-Central", undefined, server)
-                ns.write(`/lock/controllers/${server}.txt`, "lockfile.")
+                const pid = ns.exec(script, "Controller-Central", undefined, server);
+                ns.write(`/lock/controllers/${server}.txt`, JSON.stringify({pid, server}));
             }
             infectedSet.add(server);
         }
