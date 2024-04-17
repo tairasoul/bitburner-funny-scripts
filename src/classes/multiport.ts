@@ -1,7 +1,7 @@
 import ns from "@ns"
 
 export default class Multiport {
-    ports: ns.NetscriptPort[] = [];
+    private ports: ns.NetscriptPort[] = [];
     constructor(ns: ns.NS, start: number, end: number) {
         for (let i = start; i <= end; i++) {
             this.ports.push(ns.getPortHandle(i));
