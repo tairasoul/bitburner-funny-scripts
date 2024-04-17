@@ -58,7 +58,7 @@ export default class Communicator {
 
     private async AwaitResponse() {
         while (true) {
-            await this.ns.sleep(1);
+            await this.responses.nextWrite();
             if (this.responses.peek((data) => this.isForThisPID(data))) {
                 return JSON.parse(this.responses.read((data) => this.isForThisPID(data))) as ResponseMessage;
             }
