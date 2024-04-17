@@ -18,6 +18,14 @@ export default class Multiport {
         }
     }
 
+    nextWrite() {
+        const promises: Promise<void>[] = [];
+        for (const port of this.ports) {
+            promises.push(port.nextWrite());
+        }
+        return Promise.any(promises);
+    }
+
     clear() {
         for (const port of this.ports)
             port.clear();
