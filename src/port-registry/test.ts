@@ -2,7 +2,7 @@ import ns from "@ns";
 import Communicator from "/port-registry/classes/communicator";
 
 // requests: 1 - 100
-// responses: 101 - 10000
+// responses: 101 - 200
 
 export async function main(ns: ns.NS) {
     ns.disableLog("ALL");

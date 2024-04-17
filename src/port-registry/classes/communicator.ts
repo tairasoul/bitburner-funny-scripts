@@ -24,7 +24,7 @@ export default class Communicator {
     constructor(ns: ns.NS) {
         this.ns = ns;
         this.requests = new Multiport(ns, 1, 100);
-        this.responses = new Multiport(ns, 101, 10000);
+        this.responses = new Multiport(ns, 101, 200);
     }
 
     async assignPorts(ports: number[]) {

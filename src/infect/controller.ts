@@ -12,7 +12,6 @@ export async function main(ns: ns.NS) {
     });
     const port = ns.getPortHandle(portUsed);
     port.clear();
-    await port.write(targetServer)
     const grow = "/infect/worms/grow.js";
     const hack = "/infect/worms/hack.js";
     const weaken = "/infect/worms/weaken.js";
