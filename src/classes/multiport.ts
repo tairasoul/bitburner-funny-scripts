@@ -38,13 +38,6 @@ export default class Multiport {
         return true;
     }
 
-    hasItems() {
-        for (const port of this.ports) 
-            if (port.empty())
-                return false;
-        return false;
-    }
-
     full() {
         for (const port of this.ports)
             if (!port.full())
