@@ -185,7 +185,7 @@ class PortHandler {
     }
 
     sendResponse(response: ResponseMessage) {
-        this.responses.write(JSON.stringify(response), (_, port) => port.empty());
+        this.responses.writeEmpty(JSON.stringify(response));
     }
 }
 
