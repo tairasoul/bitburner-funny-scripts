@@ -17,3 +17,8 @@ Current contents:
 
 - Small infection script (src/infect/infect.ts)
     - Infects and gains as much access to all servers it can access, then if you are able to hack it, deploys controller.ts to a server called Controller-Central.
+
+- Some general utilities
+    - locks.ts (src/general/locks.ts) is just an easier way for me to make sure scripts dont overlap eachother.
+    - ramnet.ts (src/general/ramnet.ts) is taken from [DarkTechnomancer's github](https://github.com/DarkTechnomancer/darktechnomancer.github.io)
+    - remote-file.ts (src/general/remote-file.ts) is just a way to read/write files on a different server than the script is running in.
