@@ -32,12 +32,13 @@ export class RemoteFiles {
         return ret_data;
     }
 
-    async write(path: string, fileData: string, host: string) {
+    async write(path: string, fileData: string, host: string, mode?: "w" | "a") {
         const port = (await this.#comms.assignFirstAvailable(1)).assignedPorts[0];
         const data: OperationData = {
             op: "write",
             path,
-            data: fileData
+            data: fileData,
+            mode
         }
         const handle = this.#ns.getPortHandle(port);
         handle.write(JSON.stringify(data));
