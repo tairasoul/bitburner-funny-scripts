@@ -13,7 +13,7 @@ export type OperationData = {
 export async function main(ns: ns.NS) {
     const port = ns.args[0] as number;
     const handle = ns.getPortHandle(port);
-    const operation = handle.read() as OperationData;
+    const operation = JSON.parse(handle.read()) as OperationData;
     switch (operation.op) {
         case "read":
             handle.write(ns.read(operation.path));

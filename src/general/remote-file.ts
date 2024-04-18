@@ -23,7 +23,7 @@ export class RemoteFiles {
             path
         }
         const handle = this.#ns.getPortHandle(port);
-        handle.write(data);
+        handle.write(JSON.stringify(data));
         this.#ns.scp(perform_path, host, "home");
         this.#ns.exec(perform_path, host, undefined, port);
         await handle.nextWrite();
@@ -40,7 +40,7 @@ export class RemoteFiles {
             data: fileData
         }
         const handle = this.#ns.getPortHandle(port);
-        handle.write(data);
+        handle.write(JSON.stringify(data));
         this.#ns.scp(perform_path, host, "home");
         this.#ns.exec(perform_path, host, undefined, port);
         await handle.nextWrite();

@@ -22,7 +22,7 @@ export async function main(ns: ns.NS) {
             ns.print(`Growing ${targetServer}'s money.`);
             while (true) {
                 await port.write(targetServer)
-                await ns.sleep(1);
+                await ns.sleep(50);
                 await deployScript(ns, grow, targetServer, portUsed);
                 await port.nextWrite();
                 port.clear();
@@ -34,7 +34,7 @@ export async function main(ns: ns.NS) {
             ns.print(`Weakening ${targetServer}.`);
             while (true) {
                 await port.write(targetServer)
-                await ns.sleep(1);
+                await ns.sleep(50);
                 await deployScript(ns, weaken, targetServer, portUsed);
                 await port.nextWrite();
                 port.clear();
@@ -45,7 +45,7 @@ export async function main(ns: ns.NS) {
         ns.print(`Hacking ${targetServer}.`);
         while (true) {
             await port.write(targetServer)
-            await ns.sleep(1);
+            await ns.sleep(50);
             await deployScript(ns, hack, targetServer, portUsed);
             await port.nextWrite();
             port.clear();
