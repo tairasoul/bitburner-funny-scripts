@@ -18,6 +18,10 @@ export default class Multiport {
         }
     }
 
+    writeEmpty(data: any) {
+        this.write(data, (_, port) => port.empty());
+    }
+
     nextWrite() {
         const promises: Promise<void>[] = [];
         for (const port of this.ports) {

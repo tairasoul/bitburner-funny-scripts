@@ -33,7 +33,7 @@ export default class Communicator {
             ports,
             request: "assign"
         }
-        this.requests.write(message);
+        this.requests.writeEmpty(message);
         return await this.AwaitResponse();
     }
 
@@ -43,7 +43,7 @@ export default class Communicator {
             ports,
             request: "unassign"
         }
-        this.requests.write(message);
+        this.requests.writeEmpty(message);
     }
 
     async assignFirstAvailable(amount: number) {
@@ -52,7 +52,7 @@ export default class Communicator {
             request: "assignAvailable",
             portAmount: amount
         }
-        this.requests.write(message);
+        this.requests.writeEmpty(message);
         return await this.AwaitResponse() as unknown as AssignedAvailable;
     }
 
