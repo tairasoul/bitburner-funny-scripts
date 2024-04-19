@@ -28,9 +28,7 @@ export async function main(ns: ns.NS) {
 }
 
 async function processServers(ns: ns.NS, map: ServerInfo, infectedSet: Set<string>, commsStart: number) {
-    await ns.sleep(10);
     for (const mapped of map.sub_servers) {
-        await ns.sleep(10);
         await infectServer(ns, mapped.name, infectedSet, commsStart);
         await processServers(ns, mapped, infectedSet, commsStart);
     }
@@ -55,6 +53,6 @@ async function infectServer(ns: ns.NS, server: string, infectedSet: Set<string>,
         }
     }
     else {
-        ns.tprint(`cannot hack server ${server}, level ${ns.getPlayer().skills.hacking} is lower than ${ns.getServerRequiredHackingLevel(server)}!`);
+        ns.tprint(`cannot hack server ${server}, hacking skill ${ns.getPlayer().skills.hacking} is lower than required hacking skill ${ns.getServerRequiredHackingLevel(server)}!`);
     }
 }
