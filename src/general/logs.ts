@@ -9,7 +9,7 @@ export default class Logs {
         this.#ns = ns;
         this.#files = new RemoteFiles(this.#ns);
         if (name) {
-            this.#name = `${ns.pid}-${name}`;
+            this.#name = name;
         }
         else {
             this.#name = ns.pid.toString();
