@@ -1,5 +1,5 @@
 import ns from "@ns";
-import Communicator from "/port-registry/classes/communicator";
+import Communicator from "/service-communicators/port-registry";
 
 export async function main(ns: ns.NS) {
     //ns.disableLog("ALL")

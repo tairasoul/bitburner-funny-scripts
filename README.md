@@ -4,17 +4,20 @@ Simply scripts I use for Bitburner.
 
 Current contents:
 
-- Port registry (src/port-registry/classes/port-registry.ts)
+- Port registry (src/services/port-registry.ts)
     - This assigns ports and keeps track of which PIDs use which ports (as long as they tell the registry.)
     - Also can assign the first x available ports to a script.
     - Unassigning a port clears its data too.
+    - Communicator is located at src/service-communicators/port-registry.ts
 
-- Multiport class (src/port-registry/classes/multiport.ts)
+
+- Ramnet service (src/service/ramnet-service.ts)
+    - A more global variant of the RamNet class, functioning as a seperate script and talking with other scripts through ports.
+    - Communicator is located at src/service-communicators/ramnet.ts
+
+- Multiport class (src/general/multiport.ts)
     - Simply a version of a NetscriptPort that runs with multiple ports.
     - Probably not the best implementation possible, but works for what I use it for.
-
-- Port registry communicator (src/port-registry/classes/communicator.ts)
-    - Small abstraction layer for communicating with the port registry and getting it's response to the script's actions.
 
 - Small infection script (src/infect/infect.ts)
     - Infects and gains as much access to all servers it can access, then if you are able to hack it, deploys controller.ts to a server called Controller-Central.
@@ -30,3 +33,7 @@ Current contents:
     - a lot of the code is taken from [contractor.js.solver.js](https://github.com/alainbryden/bitburner-scripts/blob/main/Tasks/contractor.js.solver.js)
     - spamSolve.ts spams solve.ts 50 times onto a server called CCT-Crack
     - expect everything to be solved in like, a matter of seconds :3
+
+## todo
+
+Use the ramnet service to rewrite controller.ts to deploy as many of the same script to target a server, and wait for an equal amount of responses from said scripts.

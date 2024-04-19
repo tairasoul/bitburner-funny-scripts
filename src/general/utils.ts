@@ -20,11 +20,17 @@ export function list_servers(ns: ns.NS) {
 
 export async function gainAccess(ns: ns.NS, server: string) {
     const brute = await tryRun(() => ns.brutessh(server));
+    await ns.sleep(10);
     const ftp = await tryRun(() => ns.ftpcrack(server));
+    await ns.sleep(10);
     const http = await tryRun(() => ns.httpworm(server));
+    await ns.sleep(10);
     const smtp = await tryRun(() => ns.relaysmtp(server));
+    await ns.sleep(10);
     const sql = await tryRun(() => ns.sqlinject(server));
+    await ns.sleep(10);
     const nuke = await tryRun(() => ns.nuke(server));
+    await ns.sleep(10);
     return {
         brute,
         ftp,

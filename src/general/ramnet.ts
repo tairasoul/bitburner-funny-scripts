@@ -1,7 +1,7 @@
 import ns from "@ns";
-import { list_servers, gainAccess } from "./utils";
+import { list_servers, gainAccess } from "/general/utils";
 
-type Block = {
+export type Block = {
     server: string;
     ram: number;
 }
@@ -26,20 +26,22 @@ export default class RamNet {
 
     async init() {
         for (const server of list_servers(this.#ns)) {
-            if (!this.#ns.hasRootAccess(server)) {
-                await gainAccess(this.#ns, server);
-            }
-            if (this.#ns.hasRootAccess(server)) {
-				const maxRam = this.#ns.getServerMaxRam(server);
-				const ram = maxRam - this.#ns.getServerUsedRam(server);
-				if (ram >= 1.60) {
-					const block = { server: server, ram: ram };
-					this.#blocks.push(block);
-					if (ram < this.#minBlockSize) this.#minBlockSize = ram;
-					if (ram > this.#maxBlockSize) this.#maxBlockSize = ram;
-					this.#totalRam += ram;
-					this.#maxRam += maxRam;
-				}
+            if (server != "home" && server != "Controller-Central") {
+                if (!this.#ns.hasRootAccess(server)) {
+                    await gainAccess(this.#ns, server);
+                }
+                if (this.#ns.hasRootAccess(server)) {
+                    const maxRam = this.#ns.getServerMaxRam(server);
+                    const ram = maxRam - this.#ns.getServerUsedRam(server);
+                    if (ram >= 1.60) {
+                        const block = { server: server, ram: ram };
+                        this.#blocks.push(block);
+                        if (ram < this.#minBlockSize) this.#minBlockSize = ram;
+                        if (ram > this.#maxBlockSize) this.#maxBlockSize = ram;
+                        this.#totalRam += ram;
+                        this.#maxRam += maxRam;
+                    }
+                }
             }
         }
 		this.#sort();
@@ -52,20 +54,22 @@ export default class RamNet {
         this.#totalRam += 0;
         this.#maxRam += 0;
         for (const server of list_servers(this.#ns)) {
-            if (!this.#ns.hasRootAccess(server)) {
-                await gainAccess(this.#ns, server);
-            }
-            if (this.#ns.hasRootAccess(server)) {
-				const maxRam = this.#ns.getServerMaxRam(server);
-				const ram = maxRam - this.#ns.getServerUsedRam(server);
-				if (ram >= 1.60) {
-					const block = { server: server, ram: ram };
-					this.#blocks.push(block);
-					if (ram < this.#minBlockSize) this.#minBlockSize = ram;
-					if (ram > this.#maxBlockSize) this.#maxBlockSize = ram;
-					this.#totalRam += ram;
-					this.#maxRam += maxRam;
-				}
+            if (server != "home" && server != "Controller-Central") {
+                if (!this.#ns.hasRootAccess(server)) {
+                    await gainAccess(this.#ns, server);
+                }
+                if (this.#ns.hasRootAccess(server)) {
+                    const maxRam = this.#ns.getServerMaxRam(server);
+                    const ram = maxRam - this.#ns.getServerUsedRam(server);
+                    if (ram >= 1.60) {
+                        const block = { server: server, ram: ram };
+                        this.#blocks.push(block);
+                        if (ram < this.#minBlockSize) this.#minBlockSize = ram;
+                        if (ram > this.#maxBlockSize) this.#maxBlockSize = ram;
+                        this.#totalRam += ram;
+                        this.#maxRam += maxRam;
+                    }
+                }
             }
         }
 		this.#sort();

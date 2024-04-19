@@ -1,6 +1,6 @@
 import ns from "@ns";
-import Multiport from "/port-registry/classes/multiport";
-import { HandlerMessage } from "/port-registry/classes/port-registry";
+import Multiport from "/general/multiport";
+import { HandlerMessage } from "/services/port-registry";
 
 type ResponseMessage = {
     pid: number;
@@ -17,14 +17,14 @@ type AssignedAvailable = {
     assignedPorts: number[];
 }
 
-export default class Communicator {
+export default class PortCommunicator {
     private ns: ns.NS;
     private requests: Multiport;
     private responses: Multiport;
     constructor(ns: ns.NS) {
         this.ns = ns;
-        this.requests = new Multiport(ns, 1, 100);
-        this.responses = new Multiport(ns, 101, 200);
+        this.requests = new Multiport(ns, {start: 1, end: 100});
+        this.responses = new Multiport(ns, {start: 101, end: 200});
     }
 
     async assignPorts(ports: number[]) {
