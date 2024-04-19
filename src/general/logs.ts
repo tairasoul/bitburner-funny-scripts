@@ -14,6 +14,7 @@ export default class Logs {
         else {
             this.#name = ns.pid.toString();
         }
+        ns.print(`Logs for this script can be found at /logs/${this.#name}-log.txt on the "home" server.`)
     }
 
     async Log(text: string) {
