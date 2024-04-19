@@ -24,9 +24,9 @@ export async function main(ns: ns.NS) {
     const grow = "/infect/worms/grow.js";
     const hack = "/infect/worms/hack.js";
     const weaken = "/infect/worms/weaken.js";
-    const ram = ns.getServerMaxRam("Controller-Worms") / controllerAmount;
+    const ram = (ns.getServerMaxRam("Controller-Worms") / controllerAmount) * 0.945;
     ns.scp([grow, hack, weaken], "Controller-Worms", "home")
-    const minMoney = ns.getServerMoneyAvailable(targetServer);
+    const minMoney = ns.getServerMaxMoney(targetServer) * 0.5;
     while (true) {
         await ns.sleep(1);
         if (ns.getServerMoneyAvailable(targetServer) < minMoney) {
