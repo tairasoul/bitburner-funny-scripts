@@ -61,7 +61,23 @@ export default class RamnetComms {
         return ret.result;
     }
 
-    async get(property: "totalRam" | "maxRam" | "maxBlockSize" | "clone") {
+    async getTotalRam() {
+        return await this.get("totalRam") as RamnetResponses.totalRamResult;
+    }
+
+    async getMaxRam() {
+        return await this.get("maxRam") as RamnetResponses.maxRamResult;
+    }
+
+    async getMaxBlockSize() {
+        return await this.get("maxBlockSize") as RamnetResponses.maxBlockSizeResult;
+    }
+
+    async getClone() {
+        return await this.get("clone") as RamnetResponses.cloneResult;
+    }
+
+    private async get(property: "totalRam" | "maxRam" | "maxBlockSize" | "clone") {
         this.requests.writeEmpty(
             {
                 pid: this.ns.pid,
@@ -70,16 +86,7 @@ export default class RamnetComms {
             }
         )
         const ret = await this.AwaitResponse();
-        switch (property) {
-            case "clone":
-                return ret as RamnetResponses.cloneResult;
-            case "maxBlockSize":
-                return ret as RamnetResponses.maxBlockSizeResult;
-            case "maxRam":
-                return ret as RamnetResponses.maxRamResult;
-            case "totalRam":
-                return ret as RamnetResponses.totalRamResult;
-        }
+        return ret;
     }
 
     update() {
