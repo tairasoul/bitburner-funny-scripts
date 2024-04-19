@@ -3,7 +3,7 @@ import { decompressLZ } from "/cct/decompressLZ";
 import { getCCT } from "/cct/findCct";
 import { minJumps } from "/cct/jump";
 import { largestPrimeFactor } from "/cct/largestPrimeFactor";
-import { maxProfit } from "/cct/maxProfit";
+import * as stocks from "/cct/stockTrader";
 import { maxSubarraySum } from "/cct/maxSubarraySum";
 import { sanitizeParentheses } from "/cct/parenthesesSanitize";
 import { RLE } from "/cct/RLE";
@@ -136,35 +136,46 @@ export async function solveCCT(ns: NS) {
             }
             return true;
         }
-        if (contract.type.includes("Algorithmic Stock Trader") && !contract.type.endsWith("IV")) {
-            const map = {
-                "one": 1,
-                "two": 2,
-                "three": 3,
-                "four": 4,
-                "five": 5,
-                "six": 6,
-                "seven": 7
+        if (contract.type.includes("Algorithmic Stock Trader")) {
+            const type = contract.type.split(" ")[3];
+            switch (type) {
+                case "I":
+                    const output = ns.codingcontract.attempt(stocks.stock1(contract.data), cct.cct, cct.hostname);
+                    if (output == "") {
+                        await logger.Log(`Failed to solve contract of type ${contract.type} ${cct.cct} on ${cct.hostname}.`);
+                    }
+                    else {
+                        await logger.Log(output);
+                    }
+                    return true;
+                case "II":
+                    const output2 = ns.codingcontract.attempt(stocks.stock2(contract.data), cct.cct, cct.hostname);
+                    if (output2 == "") {
+                        await logger.Log(`Failed to solve contract of type ${contract.type} ${cct.cct} on ${cct.hostname}.`);
+                    }
+                    else {
+                        await logger.Log(output2);
+                    }
+                    return true;
+                case "III":
+                    const output3 = ns.codingcontract.attempt(stocks.stock3(contract.data), cct.cct, cct.hostname);
+                    if (output3 == "") {
+                        await logger.Log(`Failed to solve contract of type ${contract.type} ${cct.cct} on ${cct.hostname}.`);
+                    }
+                    else {
+                        await logger.Log(output3);
+                    }
+                    return true;
+                case "IV":
+                    const output4 = ns.codingcontract.attempt(stocks.stock4(contract.data), cct.cct, cct.hostname);
+                    if (output4 == "") {
+                        await logger.Log(`Failed to solve contract of type ${contract.type} ${cct.cct} on ${cct.hostname}.`);
+                    }
+                    else {
+                        await logger.Log(output4);
+                    }
+                    return true;
             }
-            const maxTransactions = map[contract.description.split(" ").find((v) => Object.keys(map).includes(v)) as "one"];
-            const output = ns.codingcontract.attempt(maxProfit(maxTransactions, contract.data), cct.cct, cct.hostname);
-            if (output == "") {
-                await logger.Log(`Failed to solve contract of type ${contract.type} ${cct.cct} on ${cct.hostname}.`);
-            }
-            else {
-                await logger.Log(output);
-            }
-            return true;
-        }
-        if (contract.type.includes("Algorithmic Stock Trader") && contract.type.endsWith("IV")) {
-            const output = ns.codingcontract.attempt(maxProfit(contract.data[0], contract.data[1]), cct.cct, cct.hostname);
-            if (output == "") {
-                await logger.Log(`Failed to solve contract of type ${contract.type} ${cct.cct} on ${cct.hostname}.`);
-            }
-            else {
-                await logger.Log(output);
-            }
-            return true;
         }
         if (contract.type.startsWith("Encryption II")) {
             const output = ns.codingcontract.attempt(vignere(contract.data[0], contract.data[1]), cct.cct, cct.hostname);
