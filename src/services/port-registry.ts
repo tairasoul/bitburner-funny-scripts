@@ -1,5 +1,6 @@
 import ns from "@ns";
-import Multiport from "/port-registry/classes/multiport";
+import Multiport from "/general/multiport";
+import Lockfile from "/general/locks";
 
 // Types
 
@@ -41,7 +42,7 @@ export type HandlerMessage = {
 class MessageQueue {
     port: Multiport;
     constructor(ns: ns.NS, start: number, end: number) {
-        this.port = new Multiport(ns, start, end);
+        this.port = new Multiport(ns, {start, end});
     }
 
     get requestAvailable() {
@@ -63,7 +64,7 @@ class PortHandler {
     constructor(ns: ns.NS) {
         this.ns = ns;
         this.requests = new MessageQueue(ns, 1, 100);
-        this.responses = new Multiport(ns, 101, 200);
+        this.responses = new Multiport(ns, {start: 101, end: 200});
     }
 
     async startHandling() {

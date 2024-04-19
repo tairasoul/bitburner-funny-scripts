@@ -1,6 +1,6 @@
 import ns from "@ns";
 import { OperationData } from "/general/remote-file/perform-operation";
-import Communicator from "/port-registry/classes/communicator";
+import Communicator from "/service-communicators/port-registry";
 
 const perform_path = "/general/remote-file/perform-operation.js";
 

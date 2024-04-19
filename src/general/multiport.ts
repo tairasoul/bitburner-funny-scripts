@@ -1,10 +1,24 @@
 import ns from "@ns"
 
+type CreationData = {
+    start: number;
+    end: number;
+} | {
+    ports: number[];
+}
+
 export default class Multiport {
     private ports: ns.NetscriptPort[] = [];
-    constructor(ns: ns.NS, start: number, end: number) {
-        for (let i = start; i <= end; i++) {
-            this.ports.push(ns.getPortHandle(i));
+    constructor(ns: ns.NS, data: CreationData) {
+        if ("ports" in data) {
+            for (const port of data.ports) {
+                this.ports.push(ns.getPortHandle(port));
+            }
+        }
+        else {
+            for (let i = data.start; i <= data.end; i++) {
+                this.ports.push(ns.getPortHandle(i));
+            }
         }
     }
 
