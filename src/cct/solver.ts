@@ -40,8 +40,7 @@ function createGrid(numRows: number, numCols: number) {
     return array;
 }
 
-export async function solveCCT(ns: NS) {
-    const logger = new Logs(ns, "CCTSolver");
+export async function solveCCT(ns: NS, logger: Logs) {
     ns.disableLog("ALL");
     const cct = getCCT(ns);
     if (cct != null) {

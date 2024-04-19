@@ -24,6 +24,7 @@ Current contents:
     - locks.ts (src/general/locks.ts) is just an easier way for me to make sure scripts dont overlap eachother.
     - ramnet.ts (src/general/ramnet.ts) is taken from [DarkTechnomancer's github](https://github.com/DarkTechnomancer/darktechnomancer.github.io)
     - remote-file.ts (src/general/remote-file.ts) is just a way to read/write files on a different server than the script is running in.
+    - logs.ts (src/general/logs.ts) Just a simple way to have a logfile for a script's entire runtime.
 
 - .cct solving tomfoolery
     - a lot of the code is taken from [contractor.js.solver.js](https://github.com/alainbryden/bitburner-scripts/blob/main/Tasks/contractor.js.solver.js)
