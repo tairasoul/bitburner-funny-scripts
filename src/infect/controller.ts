@@ -2,53 +2,54 @@ import ns from "@ns";
 import Communicator from "/port-registry/classes/communicator";
 
 export async function main(ns: ns.NS) {
-    ns.disableLog("ALL")
+    //ns.disableLog("ALL")
     const targetServer = ns.args[0] as string;
+    const commsPort = ns.args[1] as number;
+    const comms = ns.getPortHandle(commsPort);
+    await comms.nextWrite();
+    const controllerAmount = comms.peek() as number;
     const portComms = new Communicator(ns);
-    const portUsed = (await portComms.assignFirstAvailable(1)).assignedPorts[0];
+    const ports = (await portComms.assignFirstAvailable(2));
+    const serverData = ports.assignedPorts[0];
+    const returnData = ports.assignedPorts[1];
     ns.atExit(() => {
-        portComms.unassignPorts([portUsed])
+        portComms.unassignPorts(ports.assignedPorts)
         ns.rm(`/lock/controllers/${targetServer}.txt`, "home");
     });
-    const port = ns.getPortHandle(portUsed);
+    const port = ns.getPortHandle(serverData);
     port.clear();
+    port.write(targetServer)
+    await ns.sleep(50);
+    const returnPort = ns.getPortHandle(returnData);
     const grow = "/infect/worms/grow.js";
     const hack = "/infect/worms/hack.js";
     const weaken = "/infect/worms/weaken.js";
+    ns.scp([grow, hack, weaken], "Controller-Worms", "home")
     const minMoney = ns.getServerMoneyAvailable(targetServer);
     while (true) {
         await ns.sleep(1);
         if (ns.getServerMoneyAvailable(targetServer) < minMoney) {
-            ns.print(`Growing ${targetServer}'s money.`);
             while (true) {
-                await port.write(targetServer)
-                await ns.sleep(50);
-                await deployScript(ns, grow, targetServer, portUsed);
-                await port.nextWrite();
-                port.clear();
+                await deployScript(ns, grow, "Controller-Worms", controllerAmount, serverData, returnData);
+                await returnPort.nextWrite();
+                returnPort.clear();
                 if (ns.getServerMoneyAvailable(targetServer) > minMoney * 2)
                     break;
             }
         }
         if (ns.getServerSecurityLevel(targetServer) > ns.getServerMinSecurityLevel(targetServer) * 1.5) {
-            ns.print(`Weakening ${targetServer}.`);
             while (true) {
-                await port.write(targetServer)
-                await ns.sleep(50);
-                await deployScript(ns, weaken, targetServer, portUsed);
-                await port.nextWrite();
-                port.clear();
+                await deployScript(ns, weaken, "Controller-Worms", controllerAmount, serverData, returnData);
+                await returnPort.nextWrite();
+                returnPort.clear();
                 if (ns.getServerSecurityLevel(targetServer) <= ns.getServerMinSecurityLevel(targetServer))
                     break;
             }
         }
-        ns.print(`Hacking ${targetServer}.`);
         while (true) {
-            await port.write(targetServer)
-            await ns.sleep(50);
-            await deployScript(ns, hack, targetServer, portUsed);
-            await port.nextWrite();
-            port.clear();
+            await deployScript(ns, hack, "Controller-Worms", controllerAmount, serverData, returnData);
+            await returnPort.nextWrite();
+            returnPort.clear();
             if (ns.getServerSecurityLevel(targetServer) > ns.getServerMinSecurityLevel(targetServer) * 1.5)
                 break;
             if (ns.getServerMoneyAvailable(targetServer) < minMoney * 2)
@@ -57,11 +58,9 @@ export async function main(ns: ns.NS) {
     }
 }
 
-async function deployScript(ns: ns.NS, script: string, server: string, ...args: any[]) {
+async function deployScript(ns: ns.NS, script: string, server: string, controllers: number, ...args: any[]) {
     const scriptRam = ns.getScriptRam(script, "home");
     const available = ns.getServerMaxRam(server) - ns.getServerUsedRam(server);
-    const threads = Math.floor(available / scriptRam);
-    if (!ns.fileExists(script, server))
-        ns.scp(script, server, "home");
+    const threads = Math.floor(available / scriptRam / controllers);
     ns.exec(script, server, threads, ...args);
 }

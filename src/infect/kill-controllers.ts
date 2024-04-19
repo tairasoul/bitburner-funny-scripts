@@ -6,6 +6,6 @@ export async function main(ns: ns.NS) {
         const { server, pid } = JSON.parse(ns.read(lock)) as {server: string, pid: number};
         ns.tprint(`${server}'s controller pid: ${pid}, killing.`);
         ns.kill(pid);
-        ns.killall(server);
     }
+    ns.killall("Controller-Worms");
 }

@@ -7,6 +7,7 @@ Current contents:
 - Port registry (src/port-registry/classes/port-registry.ts)
     - This assigns ports and keeps track of which PIDs use which ports (as long as they tell the registry.)
     - Also can assign the first x available ports to a script.
+    - Unassigning a port clears its data too.
 
 - Multiport class (src/port-registry/classes/multiport.ts)
     - Simply a version of a NetscriptPort that runs with multiple ports.
@@ -17,6 +18,7 @@ Current contents:
 
 - Small infection script (src/infect/infect.ts)
     - Infects and gains as much access to all servers it can access, then if you are able to hack it, deploys controller.ts to a server called Controller-Central.
+    - Each controller has its own section of RAM on a server called Controller-Worms, and deploys grow/hack/weaken.ts to said server within it's RAM block.
 
 - Some general utilities
     - locks.ts (src/general/locks.ts) is just an easier way for me to make sure scripts dont overlap eachother.
