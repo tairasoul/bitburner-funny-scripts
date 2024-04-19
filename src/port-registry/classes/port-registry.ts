@@ -119,6 +119,9 @@ class PortHandler {
                     })
                     return portsMatch;
                 })
+                for (const port of message.ports) {
+                    this.ns.getPortHandle(port).clear();
+                }
                 if (found) {
                     this.assigned = this.assigned.filter((v) => v != found);
                 }
