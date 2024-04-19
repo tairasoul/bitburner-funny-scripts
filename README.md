@@ -34,6 +34,11 @@ Current contents:
     - spamSolve.ts spams solve.ts 50 times onto a server called CCT-Crack
     - expect everything to be solved in like, a matter of seconds :3
 
+- small github cloner
+    - clones a github repository
+    - first argument is the repository link, second is the sub-directory to clone from, third is the branch
+    - auth is grabbed from git-config/auth.txt
+
 ## todo
 
 Use the ramnet service to rewrite controller.ts to deploy as many of the same script to target a server, and wait for an equal amount of responses from said scripts.
