@@ -24,13 +24,14 @@ export async function main(ns: ns.NS) {
     const grow = "/infect/worms/grow.js";
     const hack = "/infect/worms/hack.js";
     const weaken = "/infect/worms/weaken.js";
+    const ram = ns.getServerMaxRam("Controller-Worms") / controllerAmount;
     ns.scp([grow, hack, weaken], "Controller-Worms", "home")
     const minMoney = ns.getServerMoneyAvailable(targetServer);
     while (true) {
         await ns.sleep(1);
         if (ns.getServerMoneyAvailable(targetServer) < minMoney) {
             while (true) {
-                await deployScript(ns, grow, "Controller-Worms", controllerAmount, serverData, returnData);
+                await deployScript(ns, grow, "Controller-Worms", ram, serverData, returnData);
                 await returnPort.nextWrite();
                 returnPort.clear();
                 if (ns.getServerMoneyAvailable(targetServer) > minMoney * 2)
@@ -39,7 +40,7 @@ export async function main(ns: ns.NS) {
         }
         if (ns.getServerSecurityLevel(targetServer) > ns.getServerMinSecurityLevel(targetServer) * 1.5) {
             while (true) {
-                await deployScript(ns, weaken, "Controller-Worms", controllerAmount, serverData, returnData);
+                await deployScript(ns, weaken, "Controller-Worms", ram, serverData, returnData);
                 await returnPort.nextWrite();
                 returnPort.clear();
                 if (ns.getServerSecurityLevel(targetServer) <= ns.getServerMinSecurityLevel(targetServer))
@@ -47,7 +48,7 @@ export async function main(ns: ns.NS) {
             }
         }
         while (true) {
-            await deployScript(ns, hack, "Controller-Worms", controllerAmount, serverData, returnData);
+            await deployScript(ns, hack, "Controller-Worms", ram, serverData, returnData);
             await returnPort.nextWrite();
             returnPort.clear();
             if (ns.getServerSecurityLevel(targetServer) > ns.getServerMinSecurityLevel(targetServer) * 1.5)
@@ -58,10 +59,8 @@ export async function main(ns: ns.NS) {
     }
 }
 
-async function deployScript(ns: ns.NS, script: string, server: string, controllers: number, ...args: any[]) {
-    // this is probably not as efficient as it could be, it doesnt seem to use more than half of the memory on the server
+async function deployScript(ns: ns.NS, script: string, server: string, maxRam: number, ...args: any[]) {
     const scriptRam = ns.getScriptRam(script, "home");
-    const available = ns.getServerMaxRam(server) / controllers - ns.getServerUsedRam(server) / controllers;
-    const threads = Math.floor(available / scriptRam);
+    const threads = Math.floor(maxRam / scriptRam);
     ns.exec(script, server, threads, ...args);
 }
