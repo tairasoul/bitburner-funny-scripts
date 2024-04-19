@@ -59,8 +59,9 @@ export async function main(ns: ns.NS) {
 }
 
 async function deployScript(ns: ns.NS, script: string, server: string, controllers: number, ...args: any[]) {
+    // this is probably not as efficient as it could be, it doesnt seem to use more than half of the memory on the server
     const scriptRam = ns.getScriptRam(script, "home");
-    const available = ns.getServerMaxRam(server) - ns.getServerUsedRam(server);
-    const threads = Math.floor(available / scriptRam / controllers);
+    const available = ns.getServerMaxRam(server) / controllers - ns.getServerUsedRam(server) / controllers;
+    const threads = Math.floor(available / scriptRam);
     ns.exec(script, server, threads, ...args);
 }
