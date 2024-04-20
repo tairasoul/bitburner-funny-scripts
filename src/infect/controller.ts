@@ -59,6 +59,7 @@ export async function main(ns: ns.NS) {
     while (true) {
         await ns.sleep(1);
         if (ns.getServerMoneyAvailable(targetServer) < minMoney) {
+            ns.print(`growing money available on server ${targetServer}`);
             while (true) {
                 await ns.sleep(1);
                 const jobsAssigned: Job[] = [];
@@ -113,11 +114,12 @@ export async function main(ns: ns.NS) {
                         break;
                     }
                 }
-                if (ns.getServerMoneyAvailable(targetServer) > minMoney * 2)
+                if (ns.getServerMoneyAvailable(targetServer) > ns.getServerMaxMoney(targetServer))
                     break;
             }
         }
         if (ns.getServerSecurityLevel(targetServer) > ns.getServerMinSecurityLevel(targetServer) * 1.5) {
+            ns.print(`weakening server ${targetServer}`);
             while (true) {
                 await ns.sleep(1);
                 const jobsAssigned: Job[] = [];
@@ -176,6 +178,7 @@ export async function main(ns: ns.NS) {
                     break;
             }
         }
+        ns.print(`hacking server ${targetServer}`);
         while (true) {
             await ns.sleep(1);
             const jobsAssigned: Job[] = [];
