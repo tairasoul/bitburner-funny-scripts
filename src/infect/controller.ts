@@ -34,7 +34,7 @@ export async function main(ns: ns.NS) {
         ns.rm("controller-data/controllers.txt")
     })
     ns.print(`got controller amount, ${controllerAmount}`);
-    const ramnetDedicated = Math.floor(ramnetRam.totalRam / controllerAmount);
+    const ramnetDedicated = Math.floor(Math.floor(ramnetRam.totalRam / controllerAmount) * 0.98);
     ns.print(`ram on ramnet dedicated per controller: ${ramnetDedicated}`);
     const portComms = new Communicator(ns);
     const ports = (await portComms.assignFirstAvailable(1));
@@ -49,7 +49,6 @@ export async function main(ns: ns.NS) {
     const growS = "/infect/worms/grow.js";
     const hackS = "/infect/worms/hack.js";
     const weakenS = "/infect/worms/weaken.js";
-    let ramUsed = 0;
     const jobs = {
         grow: {
             ram: ns.getScriptRam(growS, "home"),
@@ -69,11 +68,13 @@ export async function main(ns: ns.NS) {
     while (true) {
         await ns.sleep(1);
         if (ns.getServerMoneyAvailable(targetServer) < minMoney) {
+            let ramUsed = 0;
             ns.print(`growing money available on server ${targetServer}`);
             while (true) {
                 await ns.sleep(1);
                 const jobsAssigned: Job[] = [];
                 let jobsDone = 0;
+                ns.print(`assigning grow jobs for server ${targetServer}`);
                 while (true) {
                     const newJob = await ramnet.assignJob(jobs.grow);
                     const server = newJob.jobAssigned.server;
@@ -90,6 +91,7 @@ export async function main(ns: ns.NS) {
                         }
                         ramUsed += ramUsage;
                         await ramnet.finishJob(newJob.jobAssigned);
+                        ns.print(`ram used: ${ramUsed}/${ramnetDedicated} w/ ${threads} threads`);
                         if (ramUsed >= ramnetDedicated || threads == 0) {
                             ramUsed -= ramUsage;
                             break;
@@ -129,6 +131,7 @@ export async function main(ns: ns.NS) {
             }
         }
         if (ns.getServerSecurityLevel(targetServer) >= ns.getServerMinSecurityLevel(targetServer) * 1.5) {
+            let ramUsed = 0;
             ns.print(`weakening server ${targetServer}`);
             while (true) {
                 await ns.sleep(1);
@@ -150,6 +153,7 @@ export async function main(ns: ns.NS) {
                         }
                         ramUsed += ramUsage;
                         await ramnet.finishJob(newJob.jobAssigned);
+                        ns.print(`ram used: ${ramUsed}/${ramnetDedicated} w/ ${threads} threads`);
                         if (ramUsed >= ramnetDedicated || threads == 0) {
                             ramUsed -= ramUsage;
                             break;
@@ -190,6 +194,7 @@ export async function main(ns: ns.NS) {
         }
         ns.print(`hacking server ${targetServer}`);
         while (true) {
+            let ramUsed = 0;
             await ns.sleep(1);
             const jobsAssigned: Job[] = [];
             let jobsDone = 0;
@@ -202,13 +207,14 @@ export async function main(ns: ns.NS) {
                     let ramUsage = ns.getScriptRam(hackS, "home") * threads;
                     if (ramUsed + ramUsage >= ramnetDedicated) {
                         while (ramUsed + ramUsage >= ramnetDedicated) {
-                            if (threads == 0) break;
+                            if (threads <= 0) break;
                             threads -= 1;
                             ramUsage = ns.getScriptRam(hackS, "home") * threads;
                         }
                     }
                     ramUsed += ramUsage;
                     await ramnet.finishJob(newJob.jobAssigned);
+                    ns.print(`ram used: ${ramUsed}/${ramnetDedicated} w/ ${threads} threads`);
                     if (ramUsed >= ramnetDedicated || threads == 0) {
                         ramUsed -= ramUsage;
                         break;

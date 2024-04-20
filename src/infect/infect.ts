@@ -21,7 +21,7 @@ export async function main(ns: ns.NS) {
     ns.toast(`hacked ${pids} servers!`, "info", 3000)
     ns.toast("completed processing of server list", "success", 2000);
     const portComms = ns.getPortHandle(start)
-    await ns.sleep(1000);
+    await ns.sleep(7500);
     portComms.write(pids);
     await ns.sleep(20000);
     comms.unassignPorts([start]);
