@@ -64,6 +64,68 @@ export async function main(ns: ns.NS) {
     const minMoney = ns.getServerMaxMoney(targetServer) * 0.5;
     while (true) {
         await ns.sleep(1);
+        if (ns.getServerSecurityLevel(targetServer) >= ns.getServerMinSecurityLevel(targetServer) * 1.05) {
+            let ramUsed = 0;
+            ns.print(`weakening server ${targetServer}`);
+            while (true) {
+                await ns.sleep(1);
+                const jobsAssigned: Job[] = [];
+                let jobsDone = 0;
+                while (true) {
+                    const newJob = await ramnet.assignJob(jobs.grow);
+                    const server = newJob.jobAssigned.server;
+                    if (server != '') {
+                        const serverRam = ns.getServerMaxRam(server) - ns.getServerUsedRam(server);
+                        let threads = Math.floor(serverRam / ns.getScriptRam(weakenS, "home"));
+                        let ramUsage = ns.getScriptRam(weakenS, "home") * threads;
+                        if (ramUsed + ramUsage >= ramnetDedicated) {
+                            while (ramUsed + ramUsage >= ramnetDedicated) {
+                                if (threads == 0) break;
+                                threads -= 1;
+                                ramUsage = ns.getScriptRam(weakenS, "home") * threads;
+                            }
+                        }
+                        ramUsed += ramUsage;
+                        await ramnet.finishJob(newJob.jobAssigned);
+                        ns.print(`ram used: ${ramUsed}/${ramnetDedicated} w/ ${threads} threads`);
+                        if (ramUsed >= ramnetDedicated || threads == 0) {
+                            ramUsed -= ramUsage;
+                            break;
+                        }
+                        const realJob = await ramnet.assignJob({ram: ramUsage, server: ""});
+                        if (realJob.jobAssigned.server != '') {
+                            jobsDone += 1;
+                            jobsAssigned.push(realJob.jobAssigned)
+                            copyScripts(ns, realJob.jobAssigned.server);
+                            weaken(ns, threads, realJob.jobAssigned.server, returnPorts.assignedPorts, {server: targetServer, startPort: startSignal});
+                        }
+                    }
+                }
+                let jobsFinished = 0;
+                ns.print(`making sure all scripts can get start signal..`);
+                await ns.sleep(1000);
+                ns.print(`starting all scripts.`);
+                start.write("GO");
+                while (true) {
+                    await ns.sleep(1);
+                    if (!returnPort.empty()) {
+                        returnPort.read();
+                        jobsFinished++;
+                        ns.print(`job ${jobsFinished}/${jobsDone} finished`)
+                    }
+                    if (jobsFinished == jobsDone) {
+                        ns.print(`telling ramnet the jobs are finished (${jobsFinished} jobs)`)
+                        for (const job of jobsAssigned) {
+                            await ramnet.finishJob(job);
+                        }
+                        ramUsed = 0;
+                        break;
+                    }
+                }
+                if (ns.getServerSecurityLevel(targetServer) <= ns.getServerMinSecurityLevel(targetServer))
+                    break;
+            }
+        }
         if (ns.getServerMoneyAvailable(targetServer) < minMoney) {
             let ramUsed = 0;
             ns.print(`growing money available on server ${targetServer}`);
@@ -127,7 +189,7 @@ export async function main(ns: ns.NS) {
                     break;
             }
         }
-        if (ns.getServerSecurityLevel(targetServer) >= ns.getServerMinSecurityLevel(targetServer) * 1.5) {
+        if (ns.getServerSecurityLevel(targetServer) >= ns.getServerMinSecurityLevel(targetServer) * 1.05) {
             let ramUsed = 0;
             ns.print(`weakening server ${targetServer}`);
             while (true) {
