@@ -1,9 +1,12 @@
 import ns from "@ns";
+import { WormData } from "/infect/worms/types";
+import Multiport from "/general/multiport";
 
 export async function main(ns: ns.NS) {
-    const comms = ns.getPortHandle(ns.args[0] as number);
-    const returnComms = ns.getPortHandle(ns.args[1] as number);
-    const server = comms.peek();
-    await ns.weaken(server);
-    returnComms.write("finished");
+    const returnComms = new Multiport(ns, {ports: JSON.parse(ns.args[0] as string)})
+    const data = JSON.parse(ns.args[1] as string) as WormData;
+    const port = ns.getPortHandle(data.startPort);
+    await port.nextWrite();
+    await ns.weaken(data.server);
+    returnComms.write(JSON.stringify(data));
 }

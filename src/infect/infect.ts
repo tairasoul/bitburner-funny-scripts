@@ -40,12 +40,9 @@ async function infectServer(ns: ns.NS, server: string, infectedSet: Set<string>,
     if (canHack) {
         const result = await gainAccess(ns, server);
         if (result.nuke) {
-            if (!ns.fileExists(`/lock/controllers/${server}.txt`)) {
-                ns.scp([script, "/general/multiport.js", "/service-communicators/port-registry.js", "/general/remote-file.js", "/general/logs.js"], "Controller-Central", "home")
-                const pid = ns.exec(script, "Controller-Central", undefined, server, commsStart);
-                pids += 1;
-                ns.write(`/lock/controllers/${server}.txt`, JSON.stringify({pid, server}));
-            }
+            ns.scp([script, "/general/multiport.js", "/service-communicators/port-registry.js", "/general/remote-file.js", "/service-communicators/ramnet.js", "/general/logs.js"], "Controller-Central", "home")
+            ns.exec(script, "Controller-Central", {temporary: true}, server, commsStart);
+            pids += 1;
             infectedSet.add(server);
         }
         else {
