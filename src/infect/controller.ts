@@ -30,9 +30,6 @@ export async function main(ns: ns.NS) {
     else {
         controllerAmount = parseInt(ns.read("controller-data/controllers.txt"));
     }
-    ns.atExit(() => {
-        ns.rm("controller-data/controllers.txt")
-    })
     ns.print(`got controller amount, ${controllerAmount}`);
     const ramnetDedicated = Math.floor(Math.floor(ramnetRam.totalRam / controllerAmount) * 0.98);
     ns.print(`ram on ramnet dedicated per controller: ${ramnetDedicated}`);

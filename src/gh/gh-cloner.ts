@@ -3,7 +3,7 @@ import { getAllFilesInRepository } from "/gh/gh-comms";
 import { RemoteFiles } from "/general/remote-file";
 
 function sanitize(str: string) {
-    return str.replace(/[^a-zA-Z0-9\s\/.]/g, '').replace(/[\s]+/g, '-');
+    return str.replace(/[^a-zA-Z0-9\s\/-.]/g, '').replace(/[\s]+/g, '-');
 }
 
 export async function main(ns: ns.NS) {
