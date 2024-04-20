@@ -26,7 +26,7 @@ export default class RamNet {
 
     async init() {
         for (const server of list_servers(this.#ns)) {
-            if (server != "Controller-Central") {
+            if (server != "home" && server != "Controller-Central") {
                 if (!this.#ns.hasRootAccess(server)) {
                     await gainAccess(this.#ns, server);
                 }
@@ -54,7 +54,7 @@ export default class RamNet {
         this.#totalRam += 0;
         this.#maxRam += 0;
         for (const server of list_servers(this.#ns)) {
-            if (server != "Controller-Central") {
+            if (server != "home" && server != "Controller-Central") {
                 if (!this.#ns.hasRootAccess(server)) {
                     await gainAccess(this.#ns, server);
                 }
