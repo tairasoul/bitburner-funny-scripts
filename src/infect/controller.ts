@@ -229,7 +229,7 @@ function hack(ns: ns.NS, threads: number, deploymentServer: string, returnData: 
 }
 
 function deployScript(ns: ns.NS, threads: number, script: string, server: string, ...args: any[]) {
-    ns.exec(script, server, {threads, temporary: true}, ...args);
+    ns.exec(script, server, threads, ...args);
 }
 
 function ensureScriptExistence(ns: ns.NS, server: string) {

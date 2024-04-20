@@ -41,7 +41,7 @@ async function infectServer(ns: ns.NS, server: string, infectedSet: Set<string>,
         const result = await gainAccess(ns, server);
         if (result.nuke) {
             ns.scp([script, "/general/multiport.js", "/service-communicators/port-registry.js", "/general/remote-file.js", "/service-communicators/ramnet.js", "/general/logs.js"], "Controller-Central", "home")
-            ns.exec(script, "Controller-Central", {temporary: true}, server, commsStart);
+            ns.exec(script, "Controller-Central", undefined, server, commsStart);
             pids += 1;
             infectedSet.add(server);
         }
