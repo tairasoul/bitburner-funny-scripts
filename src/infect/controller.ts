@@ -67,7 +67,6 @@ export async function main(ns: ns.NS) {
     const start = ns.getPortHandle(startSignal);
     const minMoney = ns.getServerMaxMoney(targetServer) * 0.5;
     while (true) {
-        ns.print(`running through loop`);
         await ns.sleep(1);
         if (ns.getServerMoneyAvailable(targetServer) < minMoney) {
             ns.print(`growing money available on server ${targetServer}`);
@@ -125,11 +124,11 @@ export async function main(ns: ns.NS) {
                         break;
                     }
                 }
-                if (ns.getServerMoneyAvailable(targetServer) > ns.getServerMaxMoney(targetServer))
+                if (ns.getServerMoneyAvailable(targetServer) >= ns.getServerMaxMoney(targetServer))
                     break;
             }
         }
-        if (ns.getServerSecurityLevel(targetServer) > ns.getServerMinSecurityLevel(targetServer) * 1.5) {
+        if (ns.getServerSecurityLevel(targetServer) >= ns.getServerMinSecurityLevel(targetServer) * 1.5) {
             ns.print(`weakening server ${targetServer}`);
             while (true) {
                 await ns.sleep(1);
@@ -244,12 +243,11 @@ export async function main(ns: ns.NS) {
                     break;
                 }
             }
-            if (ns.getServerSecurityLevel(targetServer) > ns.getServerMinSecurityLevel(targetServer) * 1.5)
+            if (ns.getServerSecurityLevel(targetServer) >= ns.getServerMinSecurityLevel(targetServer) * 1.5)
                 break;
-            if (ns.getServerMoneyAvailable(targetServer) < ns.getServerMaxMoney(targetServer) * 0.3)
+            if (ns.getServerMoneyAvailable(targetServer) <= ns.getServerMaxMoney(targetServer) * 0.3)
                 break;
         }
-        ns.print(`hacking done, loop (should be) restarting.`)
     }
 }
 
