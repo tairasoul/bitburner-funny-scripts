@@ -26,7 +26,7 @@ export async function main(ns: ns.NS) {
     ns.print(`ram on ramnet dedicated per controller: ${ramnetDedicated}`);
     const portComms = new Communicator(ns);
     const ports = (await portComms.assignFirstAvailable(1));
-    const returnPorts = await portComms.assignFirstAvailable(1000);
+    const returnPorts = await portComms.assignFirstAvailable(20);
     const startSignal = ports.assignedPorts[0];
     ns.atExit(() => {
         portComms.unassignPorts(ports.assignedPorts)
@@ -83,7 +83,7 @@ export async function main(ns: ns.NS) {
                     }
                     const realJob = await ramnet.assignJob({ram: ramUsage, server: ""});
                     jobsAssigned.push(realJob.jobAssigned)
-                    ensureScriptExistence(ns, realJob.jobAssigned.server);
+                    copyScripts(ns, realJob.jobAssigned.server);
                     grow(ns, threads, realJob.jobAssigned.server, returnPorts.assignedPorts, {server: targetServer, startPort: startSignal});
                 }
                 let jobsFinished = 0;
@@ -135,7 +135,7 @@ export async function main(ns: ns.NS) {
                     }
                     const realJob = await ramnet.assignJob({ram: ramUsage, server: ""});
                     jobsAssigned.push(realJob.jobAssigned)
-                    ensureScriptExistence(ns, realJob.jobAssigned.server);
+                    copyScripts(ns, realJob.jobAssigned.server);
                     weaken(ns, threads, realJob.jobAssigned.server, returnPorts.assignedPorts, {server: targetServer, startPort: startSignal});
                 }
                 let jobsFinished = 0;
@@ -186,7 +186,7 @@ export async function main(ns: ns.NS) {
                 }
                 const realJob = await ramnet.assignJob({ram: ramUsage, server: ""});
                 jobsAssigned.push(realJob.jobAssigned)
-                ensureScriptExistence(ns, realJob.jobAssigned.server);
+                copyScripts(ns, realJob.jobAssigned.server);
                 hack(ns, threads, realJob.jobAssigned.server, returnPorts.assignedPorts, {server: targetServer, startPort: startSignal});
             }
             let jobsFinished = 0;
@@ -232,13 +232,6 @@ function deployScript(ns: ns.NS, threads: number, script: string, server: string
     ns.exec(script, server, threads, ...args);
 }
 
-function ensureScriptExistence(ns: ns.NS, server: string) {
-    if (!ns.fileExists("/infect/worms/grow.js", server))
-        ns.scp("/infect/worms/grow.js", server, "home");
-    if (!ns.fileExists("/infect/worms/hack.js", server))
-        ns.scp("/infect/worms/hack.js", server, "home");
-    if (!ns.fileExists("/infect/worms/weaken.js", server))
-        ns.scp("/infect/worms/weaken.js", server, "home");
-    if (!ns.fileExists("/general/multiport.js", server))
-        ns.scp("/general/multiport.js", server, "home");
+function copyScripts(ns: ns.NS, server: string) {
+    ns.scp(["/infect/worms/grow.js", "/infect/worms/hack.js", "/infect/worms/weaken.js", "/general/multiport.js"], server, "home")
 }
