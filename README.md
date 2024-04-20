@@ -42,3 +42,6 @@ Current contents:
 ## todo
 
 Use the ramnet service to rewrite controller.ts to deploy as many of the same script to target a server, and wait for an equal amount of responses from said scripts.
+    - Done but freezes the game cause 4000 scripts are deployed
+    - maybe i should fix that lmao
+    - they're all 1 thread so i should adapt it to assign a job, then finish it and assign one with the amount of RAM used if we max out the threads for that one
