@@ -25,7 +25,7 @@ export async function main(ns: ns.NS) {
         ns.print(`awaiting ${commsPort} nextWrite();`)
         await comms.nextWrite();
         controllerAmount = comms.peek() as number;
-        ns.write("controller-data/controllers.txt")
+        ns.write("controller-data/controllers.txt", controllerAmount.toString())
     }
     else {
         controllerAmount = parseInt(ns.read("controller-data/controllers.txt"));
