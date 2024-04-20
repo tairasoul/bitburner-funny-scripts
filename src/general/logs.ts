@@ -18,7 +18,9 @@ export default class Logs {
     }
 
     async Log(text: string) {
-        await this.#files.write(`/logs/${this.#name}-log.txt`, "\n", "home", "a");
-        await this.#files.write(`/logs/${this.#name}-log.txt`, text, "home", "a");
+        const time = new Date(Date.now());
+        const date = time.toLocaleTimeString()
+        if (this.#ns.fileExists(`/logs/${this.#name}-log.txt`, "home")) await this.#files.write(`/logs/${this.#name}-log.txt`, "\n", "home", "a");
+        await this.#files.write(`/logs/${this.#name}-log.txt`, `[${date}] ${text}`, "home", "a");
     }
 }

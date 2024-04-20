@@ -1,5 +1,3 @@
-import { NS } from "@ns";
-
 export async function getAllFilesInRepository(owner: string, repo: string, branch = 'main', path = '', token?: string) {
     const apiUrl = `https://api.github.com/repos/${owner}/${repo}/contents/${path}?ref=${branch}`;
     const headers = token ? { 'Authorization': `Bearer ${token}`} : undefined;

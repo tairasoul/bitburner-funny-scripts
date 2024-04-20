@@ -1,8 +1,6 @@
 import ns from "@ns";
 import RamNet, { Block, Job } from "/general/ramnet";
 import Multiport from "/general/multiport";
-import Logs from "/general/logs";
-import Lockfile from "/general/locks";
 
 export type RamnetMessage = {
     pid: number;
@@ -84,13 +82,11 @@ class RamnetService {
     #requests: Multiport;
     #responses: Multiport;
     ramnet: RamNet;
-    #logs: Logs;
     constructor(ns: ns.NS, requests: Multiport, responses: Multiport) {
         this.#ns = ns;
         this.#requests = requests;
         this.#responses = responses;
         this.ramnet = new RamNet(ns);
-        this.#logs = new Logs(ns, "Ramnet-Service");
     }
 
     async handleRequests() {
@@ -103,7 +99,6 @@ class RamnetService {
     }
 
     async handleMessage(message: RamnetMessage) {
-        await this.#logs.Log(`Handling message of type ${message.message}.`);
         switch(message.message) {
             case "get":
                 switch(message.value) {
@@ -186,16 +181,9 @@ class RamnetService {
 
 export async function main(ns: ns.NS) {
     ns.disableLog("ALL");
-    const lockfile = new Lockfile(ns)
-    if (!lockfile.isLocked("ramnet-service")) {
-        await lockfile.lock('ramnet-service');
-        ns.atExit(() => {
-            lockfile.unlock("ramnet-service");
-        })
-        const requests = new Multiport(ns, {start: 201, end: 300});
-        const responses = new Multiport(ns, {start: 301, end: 400});
-        const service = new RamnetService(ns, requests, responses);
-        await service.ramnet.init();
-        await service.handleRequests();
-    }
+    const requests = new Multiport(ns, {start: 201, end: 300});
+    const responses = new Multiport(ns, {start: 301, end: 400});
+    const service = new RamnetService(ns, requests, responses);
+    await service.ramnet.init();
+    await service.handleRequests();
 }
