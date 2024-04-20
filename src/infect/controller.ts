@@ -84,7 +84,6 @@ export async function main(ns: ns.NS) {
                     const realJob = await ramnet.assignJob({ram: ramUsage, server: ""});
                     jobsAssigned.push(realJob.jobAssigned)
                     ensureScriptExistence(ns, realJob.jobAssigned.server);
-                    ns.tprint(threads);
                     grow(ns, threads, realJob.jobAssigned.server, returnPorts.assignedPorts, {server: targetServer, startPort: startSignal});
                 }
                 let jobsFinished = 0;
@@ -137,7 +136,6 @@ export async function main(ns: ns.NS) {
                     const realJob = await ramnet.assignJob({ram: ramUsage, server: ""});
                     jobsAssigned.push(realJob.jobAssigned)
                     ensureScriptExistence(ns, realJob.jobAssigned.server);
-                    ns.tprint(threads);
                     weaken(ns, threads, realJob.jobAssigned.server, returnPorts.assignedPorts, {server: targetServer, startPort: startSignal});
                 }
                 let jobsFinished = 0;
@@ -189,7 +187,6 @@ export async function main(ns: ns.NS) {
                 const realJob = await ramnet.assignJob({ram: ramUsage, server: ""});
                 jobsAssigned.push(realJob.jobAssigned)
                 ensureScriptExistence(ns, realJob.jobAssigned.server);
-                ns.tprint(threads);
                 hack(ns, threads, realJob.jobAssigned.server, returnPorts.assignedPorts, {server: targetServer, startPort: startSignal});
             }
             let jobsFinished = 0;
