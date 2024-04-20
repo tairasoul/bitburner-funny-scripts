@@ -20,9 +20,19 @@ export async function main(ns: ns.NS) {
     const ramnetRam = await ramnet.getTotalRam();
     ns.print(`got ramnet ram, ${ramnetRam.totalRam}`);
     const comms = ns.getPortHandle(commsPort);
-    ns.print(`awaiting ${commsPort} nextWrite();`)
-    await comms.nextWrite();
-    const controllerAmount = comms.peek() as number;
+    let controllerAmount: number //= comms.peek() as number;
+    if (!ns.fileExists("controller-data/controllers.txt")) {
+        ns.print(`awaiting ${commsPort} nextWrite();`)
+        await comms.nextWrite();
+        controllerAmount = comms.peek() as number;
+        ns.write("controller-data/controllers.txt")
+    }
+    else {
+        controllerAmount = parseInt(ns.read("controller-data/controllers.txt"));
+    }
+    ns.atExit(() => {
+        ns.rm("controller-data/controllers.txt")
+    })
     ns.print(`got controller amount, ${controllerAmount}`);
     const ramnetDedicated = Math.floor(ramnetRam.totalRam / controllerAmount);
     ns.print(`ram on ramnet dedicated per controller: ${ramnetDedicated}`);
@@ -57,6 +67,7 @@ export async function main(ns: ns.NS) {
     const start = ns.getPortHandle(startSignal);
     const minMoney = ns.getServerMaxMoney(targetServer) * 0.5;
     while (true) {
+        ns.print(`running through loop`);
         await ns.sleep(1);
         if (ns.getServerMoneyAvailable(targetServer) < minMoney) {
             ns.print(`growing money available on server ${targetServer}`);
@@ -235,9 +246,10 @@ export async function main(ns: ns.NS) {
             }
             if (ns.getServerSecurityLevel(targetServer) > ns.getServerMinSecurityLevel(targetServer) * 1.5)
                 break;
-            if (ns.getServerMoneyAvailable(targetServer) < minMoney * 2)
+            if (ns.getServerMoneyAvailable(targetServer) < ns.getServerMaxMoney(targetServer) * 0.3)
                 break;
         }
+        ns.print(`hacking done, loop (should be) restarting.`)
     }
 }
 
@@ -254,7 +266,7 @@ function hack(ns: ns.NS, threads: number, deploymentServer: string, returnData: 
 }
 
 function deployScript(ns: ns.NS, threads: number, script: string, server: string, ...args: any[]) {
-    ns.exec(script, server, threads, ...args);
+    ns.exec(script, server, {threads, temporary: true}, ...args);
 }
 
 function copyScripts(ns: ns.NS, server: string) {
