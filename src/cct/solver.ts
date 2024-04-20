@@ -75,7 +75,7 @@ export async function solveCCT(ns: NS, logger: Logs) {
             }
             return true;
         }
-        if (contract.type.startsWith("Compression I")) {
+        if (contract.type == "Compression I: RLE Compression") {
             const output = ns.codingcontract.attempt(RLE(contract.data), cct.cct, cct.hostname);
             if (output == "") {
                 await logger.Log(`Failed to solve contract of type ${contract.type} ${cct.cct} on ${cct.hostname}.`);
