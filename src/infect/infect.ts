@@ -5,6 +5,7 @@ import Communicator from "/service-communicators/port-registry";
 let pids = 0;
 
 export async function main(ns: ns.NS) {
+    ns.rm("controller-data/controllers.txt", "Controller-Central")
     pids = 0;
     const comms = new Communicator(ns);
     const mapped = await mapServers(ns);
