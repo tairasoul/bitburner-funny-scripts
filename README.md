@@ -10,7 +10,6 @@ Current contents:
     - Unassigning a port clears its data too.
     - Communicator is located at src/service-communicators/port-registry.ts
 
-
 - Ramnet service (src/service/ramnet-service.ts)
     - A more global variant of the RamNet class, functioning as a seperate script and talking with other scripts through ports.
     - Communicator is located at src/service-communicators/ramnet.ts
@@ -21,7 +20,8 @@ Current contents:
 
 - Small infection script (src/infect/infect.ts)
     - Infects and gains as much access to all servers it can access, then if you are able to hack it, deploys controller.ts to a server called Controller-Central.
-    - Each controller has its own section of RAM on a server called Controller-Worms, and deploys grow/hack/weaken.ts to said server within it's RAM block.
+    - Each controller has its own section of ram, retrieved from the RamNet service.
+    - The worms, grow/hack/weaken, are deployed to servers within that section of ram.
 
 - Some general utilities
     - locks.ts (src/general/locks.ts) is just an easier way for me to make sure scripts dont overlap eachother.
