@@ -4,7 +4,10 @@ import Communicator from "/service-communicators/port-registry";
 
 let pids = 0;
 
+let minMoneyCap = 0;
+
 export async function main(ns: ns.NS) {
+    minMoneyCap = parseInt(ns.args[0] as string ?? "150000000");
     ns.rm("controller-data/controllers.txt", "Controller-Central")
     pids = 0;
     const comms = new Communicator(ns);
@@ -22,7 +25,7 @@ export async function main(ns: ns.NS) {
     ns.toast(`hacked ${pids} servers!`, "info", 3000)
     ns.toast("completed processing of server list", "success", 2000);
     const portComms = ns.getPortHandle(start)
-    await ns.sleep(7500);
+    await ns.sleep(2500);
     portComms.write(pids);
     await ns.sleep(20000);
     comms.unassignPorts([start]);
@@ -41,9 +44,12 @@ async function infectServer(ns: ns.NS, server: string, infectedSet: Set<string>,
     if (canHack) {
         const result = await gainAccess(ns, server);
         if (result.nuke) {
-            ns.scp([script, "/general/multiport.js", "/service-communicators/port-registry.js", "/general/remote-file.js", "/service-communicators/ramnet.js", "/general/logs.js"], "Controller-Central", "home")
-            ns.exec(script, "Controller-Central", undefined, server, commsStart);
-            pids += 1;
+            const maxMoney = ns.getServerMaxMoney(server)
+            if (maxMoney >= minMoneyCap) {
+                ns.scp([script, "/general/multiport.js", "/service-communicators/port-registry.js", "/general/remote-file.js", "/service-communicators/ramnet.js", "/general/logs.js"], "Controller-Central", "home")
+                ns.exec(script, "Controller-Central", undefined, server, commsStart);
+                pids += 1;
+            }
             infectedSet.add(server);
         }
         else {
