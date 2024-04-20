@@ -1,5 +1,5 @@
 import ns from "@ns";
 
 export async function main(ns: ns.NS) {
-    ns.tprint(ns.formatNumber(ns.getServerMaxMoney("foodnstuff")))
+    ns.tprint(2**15)
 }
