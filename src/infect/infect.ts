@@ -18,7 +18,7 @@ export async function main(ns: ns.NS) {
     const elements = [];
     for (const value of infectedServers.values())
         elements.push(value);
-    ns.toast(`hacked ${pids} servers: ${elements.join(", ")}`, "info", 3000)
+    ns.toast(`hacked ${pids} servers!`, "info", 3000)
     ns.toast("completed processing of server list", "success", 2000);
     const portComms = ns.getPortHandle(start)
     await ns.sleep(1000);
