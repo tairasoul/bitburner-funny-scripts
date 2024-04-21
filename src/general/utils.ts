@@ -13,7 +13,7 @@ function scan(ns: ns.NS, parent: string, server: string, list: string[]) {
 }
 
 export function list_servers(ns: ns.NS) {
-    const list: string[] = [];
+    const list: string[] = ['home'];
     scan(ns, '', 'home', list);
     return list;
 }

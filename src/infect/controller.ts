@@ -15,7 +15,9 @@ export async function main(ns: ns.NS) {
     ns.disableLog("getServerUsedRam");
     const targetServer = ns.args[0] as string;
     const commsPort = ns.args[1] as number;
+    const allowRunOnHome = ns.args[2] as boolean;
     const ramnet = new RamnetComms(ns);
+    const homeRam = ns.getServerMaxRam("home") - ns.getServerUsedRam("home");
     ns.print(`getting ramnet's total ram`);
     const ramnetRam = await ramnet.getTotalRam();
     ns.print(`got ramnet ram, ${ramnetRam.totalRam}`);
@@ -31,7 +33,7 @@ export async function main(ns: ns.NS) {
         controllerAmount = parseInt(ns.read("controller-data/controllers.txt"));
     }
     ns.print(`got controller amount, ${controllerAmount}`);
-    const ramnetDedicated = Math.floor(Math.floor(ramnetRam.totalRam / controllerAmount) * 0.98);
+    const ramnetDedicated = Math.floor(Math.floor((ramnetRam.totalRam - (!allowRunOnHome ? homeRam : 0)) / controllerAmount) * 0.98);
     ns.print(`ram on ramnet dedicated per controller: ${ramnetDedicated}`);
     const portComms = new Communicator(ns);
     const ports = (await portComms.assignFirstAvailable(1));
