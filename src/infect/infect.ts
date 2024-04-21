@@ -7,8 +7,11 @@ let pids = 0;
 let minMoneyCap = 0;
 
 export async function main(ns: ns.NS) {
-    minMoneyCap = parseInt(ns.args[0] as string ?? "150000000");
-    ns.rm("controller-data/controllers.txt", "Controller-Central")
+    const flags = ns.flags([["runhome", false], ["moneyCap", 150000000], ["deployServer", "Controller-Central"]]);
+    const allowRunOnHome = flags.runhome as boolean;
+    const deployServer = flags.deployServer as string;
+    minMoneyCap = flags.moneyCap as number;
+    ns.rm("controller-data/controllers.txt", deployServer)
     pids = 0;
     const comms = new Communicator(ns);
     const mapped = await mapServers(ns);
@@ -16,8 +19,8 @@ export async function main(ns: ns.NS) {
     const portsAssigned = await comms.assignFirstAvailable(1);
     const start = portsAssigned.assignedPorts[0];
     for (const server of mapped) {
-        await infectServer(ns, server.name, infectedServers, start);
-        await processServers(ns, server, infectedServers, start);
+        await infectServer(ns, server.name, infectedServers, start, deployServer, allowRunOnHome);
+        await processServers(ns, server, infectedServers, start, deployServer, allowRunOnHome);
     }
     const elements = [];
     for (const value of infectedServers.values())
@@ -31,14 +34,14 @@ export async function main(ns: ns.NS) {
     comms.unassignPorts([start]);
 }
 
-async function processServers(ns: ns.NS, map: ServerInfo, infectedSet: Set<string>, commsStart: number) {
+async function processServers(ns: ns.NS, map: ServerInfo, infectedSet: Set<string>, commsStart: number, deployServer: string, allowRunOnHome: boolean) {
     for (const mapped of map.sub_servers) {
-        await infectServer(ns, mapped.name, infectedSet, commsStart);
-        await processServers(ns, mapped, infectedSet, commsStart);
+        await infectServer(ns, mapped.name, infectedSet, commsStart, deployServer, allowRunOnHome);
+        await processServers(ns, mapped, infectedSet, commsStart, deployServer, allowRunOnHome);
     }
 }
 
-async function infectServer(ns: ns.NS, server: string, infectedSet: Set<string>, commsStart: number) {
+async function infectServer(ns: ns.NS, server: string, infectedSet: Set<string>, commsStart: number, deployServer: string, allowRunOnHome: boolean) {
     const script = "/infect/controller.js";
     const canHack = ns.getPlayer().skills.hacking >= ns.getServerRequiredHackingLevel(server);
     if (canHack) {
@@ -46,8 +49,11 @@ async function infectServer(ns: ns.NS, server: string, infectedSet: Set<string>,
         if (result.nuke) {
             const maxMoney = ns.getServerMaxMoney(server)
             if (maxMoney >= minMoneyCap) {
-                ns.scp([script, "/general/multiport.js", "/service-communicators/port-registry.js", "/general/remote-file.js", "/service-communicators/ramnet.js", "/general/logs.js"], "Controller-Central", "home")
-                ns.exec(script, "Controller-Central", undefined, server, commsStart);
+                if (deployServer != "home") {
+                    ns.scp([script, "/general/multiport.js", "/service-communicators/port-registry.js", "/general/remote-file.js", "/service-communicators/ramnet.js", "/general/logs.js"], "Controller-Central", "home")
+                    ns.exec(script, deployServer, undefined, server, commsStart, allowRunOnHome);
+                }
+                else ns.run(script, undefined, server, commsStart, allowRunOnHome)
                 pids += 1;
             }
             infectedSet.add(server);

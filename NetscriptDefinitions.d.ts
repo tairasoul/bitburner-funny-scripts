@@ -1034,7 +1034,12 @@ type SleeveFactionTask = {
 };
 
 /** @public */
-type SleeveInfiltrateTask = { type: "INFILTRATE"; cyclesWorked: number; cyclesNeeded: number };
+type SleeveInfiltrateTask = {
+  type: "INFILTRATE";
+  cyclesWorked: number;
+  cyclesNeeded: number;
+  nextCompletion: Promise<void>;
+};
 
 /** @public */
 type SleeveRecoveryTask = { type: "RECOVERY" };
@@ -1057,9 +1062,6 @@ export type SleeveTask =
   | SleeveRecoveryTask
   | SleeveSupportTask
   | SleeveSynchroTask;
-
-/** @public */
-type GoOpponent = "Netburners" | "Slum Snakes" | "The Black Hand" | "Tetrads" | "Daedalus" | "Illuminati";
 
 /** Object representing a port. A port is a serialized queue.
  * @public */
@@ -2076,6 +2078,20 @@ export interface Singularity {
   getFactionInviteRequirements(faction: string): PlayerRequirement[];
 
   /**
+   * Get a list of enemies of a faction.
+   * @remarks
+   * RAM cost: 3 GB * 16/4/1
+   *
+   *
+   * Returns an array containing the names (as strings) of all factions
+   * that are enemies of the specified faction.
+   *
+   * @param faction - Name of faction.
+   * @returns Array containing the names of all enemies of the faction.
+   */
+  getFactionEnemies(faction: string): string[];
+
+  /**
    * List all current faction invitations.
    * @remarks
    * RAM cost: 3 GB * 16/4/1
@@ -2199,16 +2215,16 @@ export interface Singularity {
    * This function returns true if you successfully start working on the specified program, and false otherwise.
    *
    * Note that creating a program using this function has the same hacking level requirements as it normally would.
-   * These level requirements are:
-   * * BruteSSH.exe: 50
-   * * FTPCrack.exe: 100
-   * * relaySMTP.exe: 250
-   * * HTTPWorm.exe: 500
-   * * SQLInject.exe: 750
-   * * DeepscanV1.exe: 75
-   * * DeepscanV2.exe: 400
-   * * ServerProfiler.exe: 75
-   * * AutoLink.exe: 25
+   * These level requirements are:<br/>
+   * - BruteSSH.exe: 50<br/>
+   * - FTPCrack.exe: 100<br/>
+   * - relaySMTP.exe: 250<br/>
+   * - HTTPWorm.exe: 500<br/>
+   * - SQLInject.exe: 750<br/>
+   * - DeepscanV1.exe: 75<br/>
+   * - DeepscanV2.exe: 400<br/>
+   * - ServerProfiler.exe: 75<br/>
+   * - AutoLink.exe: 25
    *
    * @example
    * ```js
@@ -3923,6 +3939,16 @@ export interface Gang {
   nextUpdate(): Promise<number>;
 }
 
+/** @public */
+type GoOpponent =
+  | "Netburners"
+  | "Slum Snakes"
+  | "The Black Hand"
+  | "Tetrads"
+  | "Daedalus"
+  | "Illuminati"
+  | "????????????";
+
 /**
  * IPvGO api
  * @public
@@ -3941,10 +3967,9 @@ export interface Go {
     x: number,
     y: number,
   ): Promise<{
-    type: "invalid" | "move" | "pass" | "gameOver";
-    x: number;
-    y: number;
-    success: boolean;
+    type: "move" | "pass" | "gameOver";
+    x: number | null;
+    y: number | null;
   }>;
 
   /**
@@ -3961,10 +3986,26 @@ export interface Go {
    *
    */
   passTurn(): Promise<{
-    type: "invalid" | "move" | "pass" | "gameOver";
-    x: number;
-    y: number;
-    success: boolean;
+    type: "move" | "pass" | "gameOver";
+    x: number | null;
+    y: number | null;
+  }>;
+
+  /**
+   *  Returns a promise that resolves with the success or failure state of your last move, and the AI's response, if applicable.
+   *  x:0 y:0 represents the bottom-left corner of the board in the UI.
+   *
+   * @param logOpponentMove - optional, if false prevents logging opponent move
+   *
+   * @remarks
+   * RAM cost: 0 GB
+   *
+   * @returns a promise that contains if your last move was valid and successful, the opponent move's x and y coordinates (or pass) in response, or an indication if the game has ended
+   */
+  opponentNextTurn(logOpponentMove: boolean = true): Promise<{
+    type: "move" | "pass" | "gameOver";
+    x: number | null;
+    y: number | null;
   }>;
 
   /**
@@ -3972,15 +4013,14 @@ export interface Go {
    * "#" are dead nodes that are not part of the subnet. (They are not territory nor open nodes.)
    *
    * For example, a 5x5 board might look like this:
-```
-   [
-      "XX.O.",
-      "X..OO",
-      ".XO..",
-      "XXO.#",
-      ".XO.#",
+   *
+   [<br/>  
+      "XX.O.",<br/>  
+      "X..OO",<br/>  
+      ".XO..",<br/>  
+      "XXO.#",<br/>  
+      ".XO.#",<br/>  
    ]
-```
    *
    * Each string represents a vertical column on the board, and each character in the string represents a point.
    *
@@ -3996,9 +4036,27 @@ export interface Go {
   getBoardState(): string[];
 
   /**
+   * Returns the color of the current player, or 'None' if the game is over.
+   * @returns "White" | "Black" | "None"
+   */
+  getCurrentPlayer(): "White" | "Black" | "None";
+
+  /**
+   * Gets the status of the current game.
+   * Shows the current player, current score, and the previous move coordinates.
+   * Previous move coordinates will be [-1, -1] for a pass, or if there are no prior moves.
+   */
+  getGameState(): {
+    currentPlayer: "White" | "Black" | "None";
+    whiteScore: number;
+    blackScore: number;
+    previousMove: [number, number] | null;
+  };
+
+  /**
    * Returns the name of the opponent faction in the current subnet.
    */
-  getOpponent(): GoOpponent | "No AI" | "????????????";
+  getOpponent(): GoOpponent | "No AI";
 
   /**
    * Gets new IPvGO subnet with the specified size owned by the listed faction, ready for the player to make a move.
@@ -4007,7 +4065,7 @@ export interface Go {
    *
    * Note that some factions will have a few routers on the subnet at this state.
    *
-   * opponent is "Netburners" or "Slum Snakes" or "The Black Hand" or "Daedalus" or "Illuminati",
+   * opponent is "Netburners" or "Slum Snakes" or "The Black Hand" or "Tetrads" or "Daedalus" or "Illuminati" or "????????????",
    *
    * @returns a simplified version of the board state as an array of strings representing the board columns. See ns.Go.getBoardState() for full details
    *
@@ -4024,11 +4082,9 @@ export interface Go {
      * Shows if each point on the board is a valid move for the player.
      *
      * The true/false validity of each move can be retrieved via the X and Y coordinates of the move.
-```
-     const validMoves = ns.go.analysis.getValidMoves();
-
-     const moveIsValid = validMoves[x][y];
-```
+     *      `const validMoves = ns.go.analysis.getValidMoves();`
+     *
+     *      `const moveIsValid = validMoves[x][y];`
      *
      * Note that the [0][0] point is shown on the bottom-left on the visual board (as is traditional), and each
      * string represents a vertical column on the board. In other words, the printed example above can be understood to
@@ -4048,16 +4104,15 @@ export interface Go {
      *
      * For example, a 5x5 board might look like this. There is a large chain #1 on the left side, smaller chains
      * 2 and 3 on the right, and a large chain 0 taking up the center of the board.
-     *
-```
-      [
-        [   0,0,0,3,4],
-        [   1,0,0,3,3],
-        [   1,1,0,0,0],
-        [null,1,0,2,2],
-        [null,1,0,2,5],
-      ]
-```
+     * <pre lang="javascript">
+     *       [
+     *         [   0,0,0,3,4],
+     *         [   1,0,0,3,3],
+     *         [   1,1,0,0,0],
+     *         [null,1,0,2,2],
+     *         [null,1,0,2,5],
+     *       ]
+     * </pre>
      * @remarks
      * RAM cost: 16 GB
      * (This is intentionally expensive; you can derive this info from just getBoardState() )
@@ -4072,15 +4127,15 @@ export interface Go {
      * For example, a 5x5 board might look like this. The chain in the top-left touches 5 total empty nodes, and the one
      * in the center touches four. The group in the bottom-right only has one liberty; it is in danger of being captured!
      *
-```
-     [
-        [-1, 5,-1,-1, 2],
-        [ 5, 5,-1,-1,-1],
-        [-1,-1, 4,-1,-1],
-        [ 3,-1,-1, 3, 1],
-        [ 3,-1,-1, 3, 1],
-     ]
-```
+     * <pre lang="javascript">
+     *      [
+     *         [-1, 5,-1,-1, 2],
+     *         [ 5, 5,-1,-1,-1],
+     *         [-1,-1, 4,-1,-1],
+     *         [ 3,-1,-1, 3, 1],
+     *         [ 3,-1,-1, 3, 1],
+     *      ]
+     * </pre>
      *
      * @remarks
      * RAM cost: 16 GB
@@ -4096,15 +4151,16 @@ export interface Go {
      * Filled points of any color are indicated with '.'
      *
      * In this example, white encircles some space in the top-left, black encircles some in the top-right, and between their routers is contested space in the center:
-```
-  [
-     "OO..?",
-     "OO.?.",
-     "O.?.X",
-     ".?.XX",
-     "?..X#",
-  ]
-```
+     *
+     * <pre lang="javascript">
+     *   [
+     *      "OO..?",
+     *      "OO.?.",
+     *      "O.?.X",
+     *      ".?.XX",
+     *      "?..X#",
+     *   ]
+     * </pre>
      *
      * @remarks
      * RAM cost: 16 GB
@@ -4147,10 +4203,9 @@ export interface Go {
       x: number,
       y: number,
     ): Promise<{
-      type: "invalid" | "move" | "pass" | "gameOver";
-      x: number;
-      y: number;
-      success: boolean;
+      type: "move" | "pass" | "gameOver";
+      x: number | null;
+      y: number | null;
     }>;
     /**
      * Attempts to place two routers at once on empty nodes. Note that this ignores other move restrictions, so you can
@@ -4173,10 +4228,9 @@ export interface Go {
       x2: number,
       y2: number,
     ): Promise<{
-      type: "invalid" | "move" | "pass" | "gameOver";
-      x: number;
-      y: number;
-      success: boolean;
+      type: "move" | "pass" | "gameOver";
+      x: number | null;
+      y: number | null;
     }>;
 
     /**
@@ -4197,10 +4251,9 @@ export interface Go {
       x: number,
       y: number,
     ): Promise<{
-      type: "invalid" | "move" | "pass" | "gameOver";
-      x: number;
-      y: number;
-      success: boolean;
+      type: "move" | "pass" | "gameOver";
+      x: number | null;
+      y: number | null;
     }>;
 
     /**
@@ -4222,10 +4275,9 @@ export interface Go {
       x: number,
       y: number,
     ): Promise<{
-      type: "invalid" | "move" | "pass" | "gameOver";
-      x: number;
-      y: number;
-      success: boolean;
+      type: "move" | "pass" | "gameOver";
+      x: number | null;
+      y: number | null;
     }>;
   };
 }
@@ -4653,11 +4705,20 @@ interface HackingFormulas {
    */
   hackPercent(server: Server, player: Person): number;
   /**
-   * Calculate the percent a server would grow to.
-   * Not exact due to limitations of mathematics.
-   * (Ex: 3.0 would grow the server to 300% of its current value.)
+   * Calculate the growth multiplier constant for a given server and threads.
+   *
+   * The actual amount of money grown depends both linearly *and* exponentially on threads;
+   * this is only giving the exponential part that is used for the multiplier.
+   * See {@link NS.grow | grow} for more details.
+   *
+   * As a result of the above, this multiplier does *not* depend on the amount of money on the server.
+   * Changing server.moneyAvailable and server.moneyMax will have no effect.
+   *
+   * For the most common use-cases, you probably want
+   * either {@link HackingFormulas.growThreads | formulas.hacking.growThreads}
+   * or {@link HackingFormulas.growAmount | formulas.hacking.growAmount} instead.
    * @param server - Server info, typically from {@link NS.getServer | getServer}
-   * @param threads - Amount of thread.
+   * @param threads - Amount of threads. Can be fractional.
    * @param player - Player info, typically from {@link NS.getPlayer | getPlayer}
    * @param cores - Number of cores on the computer that will execute grow.
    * @returns The calculated grow percent.
@@ -4665,6 +4726,13 @@ interface HackingFormulas {
   growPercent(server: Server, threads: number, player: Person, cores?: number): number;
   /**
    * Calculate how many threads it will take to grow server to targetMoney. Starting money is server.moneyAvailable.
+   * Note that when simulating the effect of {@link NS.grow | grow}, what matters is the state of the server and player
+   * when the grow *finishes*, not when it is started.
+   *
+   * The growth amount depends both linearly *and* exponentially on threads; see {@link NS.grow | grow} for more details.
+   *
+   * The inverse of this function is {@link HackingFormulas.growAmount | formulas.hacking.growAmount},
+   * although it can work with fractional threads.
    * @param server - Server info, typically from {@link NS.getServer | getServer}
    * @param player - Player info, typically from {@link NS.getPlayer | getPlayer}
    * @param targetMoney - Desired final money, capped to server's moneyMax
@@ -4672,6 +4740,22 @@ interface HackingFormulas {
    * @returns The calculated grow threads as an integer, rounded up.
    */
   growThreads(server: Server, player: Person, targetMoney: number, cores?: number): number;
+  /**
+   * Calculate the amount of money a grow action will leave a server with. Starting money is server.moneyAvailable.
+   * Note that when simulating the effect of {@link NS.grow | grow}, what matters is the state of the server and player
+   * when the grow *finishes*, not when it is started.
+   *
+   * The growth amount depends both linearly *and* exponentially on threads; see {@link NS.grow | grow} for more details.
+   *
+   * The inverse of this function is {@link HackingFormulas.growThreads | formulas.hacking.growThreads},
+   * although it rounds up to integer threads.
+   * @param server - Server info, typically from {@link NS.getServer | getServer}
+   * @param player - Player info, typically from {@link NS.getPlayer | getPlayer}
+   * @param threads - Number of threads to grow with. Can be fractional.
+   * @param cores - Number of cores on the computer that will execute grow.
+   * @returns The amount of money after the calculated grow.
+   */
+  growAmount(server: Server, player: Person, threads: number, cores?: number): number;
   /**
    * Calculate hack time.
    * @param server - Server info, typically from {@link NS.getServer | getServer}
@@ -5334,7 +5418,11 @@ export interface NS {
    * multiplicative portion of server growth.
    *
    * To determine the effect of a single grow, obtain access to the Formulas API and use
-   * {@link HackingFormulas.growPercent | formulas.hacking.growPercent}, or invert {@link NS.growthAnalyze | growthAnalyze}.
+   * {@link HackingFormulas.growAmount | formulas.hacking.growPercent}, or invert {@link NS.growthAnalyze | growthAnalyze}.
+   *
+   * To determine how many threads are needed to return a server to max money, obtain access to the Formulas API and use
+   * {@link HackingFormulas.growThreads | formulas.hacking.growThreads}, or {@link NS.growthAnalyze} *if* the server will
+   * be at the same security in the future.
    *
    * Like {@link NS.hack | hack}, `grow` can be called on any hackable server, regardless of where the script is
    * running. Hackable servers are any servers not owned by the player.
@@ -5688,6 +5776,8 @@ export interface NS {
    * RAM cost: 0 GB
    *
    * Logging can be disabled for all functions by passing `ALL` as the argument.
+   *
+   * For specific interfaces, use the form "namespace.functionName". (e.g. "ui.setTheme")
    *
    * @param fn - Name of function for which to disable logging.
    */

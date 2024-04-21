@@ -22,7 +22,10 @@ Current contents:
     - Infects and gains as much access to all servers it can access, then if you are able to hack it, deploys controller.ts to a server called Controller-Central.
     - Each controller has its own section of ram, retrieved from the RamNet service.
     - The worms, grow/hack/weaken, are deployed to servers within that section of ram.
-    - First argument passed is the minimum the server's max money can be to be targetted. Defaults to 150m, can be set to 0 if you want to target all servers.
+    - Has 3 flags.
+    - --runhome (bool) tells it if it can run hack/grow/weaken on home. Defaults to false.
+    - --moneyCap (number) tells it how much the server's max money should be, at minimum. Defaults to 150 mil.
+    - --deployServer (string) tells it where to deploy the controllers to. Defaults to Controller-Central.
 
 - Some general utilities
     - locks.ts (src/general/locks.ts) is just an easier way for me to make sure scripts dont overlap eachother.
