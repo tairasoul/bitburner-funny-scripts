@@ -3,7 +3,7 @@ import { GAME } from "./types";
 export async function exploit() {
     const Window = eval("window");
     const doc = eval("document") as Document;
-    const optionsButton = doc.querySelector("#root > div.MuiBox-root.css-1ik4laa > div.MuiDrawer-root.MuiDrawer-docked.css-v3syqg > div > ul > div:nth-child(11) > div > div > div:nth-child(4)") as HTMLElement
+    const optionsButton = doc.querySelector("#root > div.MuiBox-root > div.MuiDrawer-root.MuiDrawer-docked > div > ul > div:nth-child(11) > div > div > div:nth-child(4)") as HTMLElement
     return await (new Promise<GAME>((resolve, reject) => {
       if (Window.GAME) {
         resolve(Window.GAME as GAME)
@@ -22,9 +22,9 @@ export async function exploit() {
           }
         });
         optionsButton.click();
-        const saveButton = doc.querySelector("#root > div.MuiBox-root.css-1ik4laa > div.jss1.MuiBox-root.css-0 > div > div > div.MuiBox-root.css-0 > div.MuiBox-root.css-2dfeen > button.MuiButtonBase-root.MuiButton-root.MuiButton-text.MuiButton-textPrimary.MuiButton-sizeMedium.MuiButton-textSizeMedium.MuiButton-root.MuiButton-text.MuiButton-textPrimary.MuiButton-sizeMedium.MuiButton-textSizeMedium.css-1pps7yp") as HTMLElement;
+        const saveButton = doc.querySelector("#root > div.MuiBox-root > div.jss1.MuiBox-root > div > div > div.MuiBox-root > div.MuiBox-root > button.MuiButtonBase-root.MuiButton-root.MuiButton-text.MuiButton-textPrimary.MuiButton-sizeMedium.MuiButton-textSizeMedium.MuiButton-root.MuiButton-text.MuiButton-textPrimary.MuiButton-sizeMedium.MuiButton-textSizeMedium") as HTMLElement;
         saveButton.click();
-        const terminal = doc.querySelector("#root > div.MuiBox-root.css-1ik4laa > div.MuiDrawer-root.MuiDrawer-docked.css-v3syqg > div > ul > div:nth-child(2) > div > div > div:nth-child(1)") as HTMLElement;
+        const terminal = doc.querySelector("#root > div.MuiBox-root > div.MuiDrawer-root.MuiDrawer-docked > div > ul > div:nth-child(2) > div > div > div:nth-child(1)") as HTMLElement;
         terminal.click();
       } catch {
         if (!Window.GAME) {
