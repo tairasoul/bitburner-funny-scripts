@@ -67,7 +67,7 @@ function clickBypassed(element: HTMLElement) {
 export async function cheat(ns: ns.NS) {
     ns.disableLog("sleep");
     const doc = eval("document") as Document;
-    const pid = ns.run("rouletteburn.js")
+    const pid = ns.run("/rouletteburn-automated/burn/rouletteburn.js")
     await ns.sleep(1500);
     const tailWindows = doc.querySelectorAll("div.react-resizable")
     let targetElement: HTMLElement | undefined;
@@ -98,7 +98,7 @@ export async function cheat(ns: ns.NS) {
 
     await ns.sleep(1000);
 
-    const playRoulette = doc.querySelector("#root > div.MuiBox-root.css-1ik4laa > div.jss1.MuiBox-root.css-0 > div > button:nth-child(3)") as HTMLElement;
+    const playRoulette = doc.querySelector("#root > div.MuiBox-root > div.jss1.MuiBox-root > div > button:nth-child(3)") as HTMLElement;
 
     playRoulette.click();
 
@@ -109,13 +109,13 @@ export async function cheat(ns: ns.NS) {
             const game = await exploit();
             if (game.moneySourceA.casino > 10e9) {
                 ns.kill(pid);
-                const terminal = doc.querySelector("#root > div.MuiBox-root.css-1ik4laa > div.MuiDrawer-root.MuiDrawer-docked.css-v3syqg > div > ul > div:nth-child(2) > div > div > div:nth-child(1)");
+                const terminal = doc.querySelector("#root > div.MuiBox-root > div.MuiDrawer-root.MuiDrawer-docked > div > ul > div:nth-child(2) > div > div > div:nth-child(1)");
                 (terminal as HTMLElement).click();
                 break;
             }
             await ns.sleep(1);
-            const rouletteBurn = targetElement.querySelector('span.MuiTypography-root.MuiTypography-body1.css-1csw0x8')?.querySelector("table") as HTMLTableElement;
-            const rouletteWindow = doc.querySelector("#root > div.MuiBox-root.css-1ik4laa > div.jss1.MuiBox-root.css-0") as HTMLDivElement;
+            const rouletteBurn = targetElement.querySelector('span')?.querySelector("table") as HTMLTableElement;
+            const rouletteWindow = doc.querySelector("#root > div.MuiBox-root > div.jss1.MuiBox-root") as HTMLDivElement;
             const roulette = rouletteWindow?.querySelector("table") as HTMLTableElement;
             if (getGreenTile(rouletteBurn) == null) {
                 const burnTile = getTile(1, rouletteBurn);
