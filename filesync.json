@@ -2,7 +2,8 @@
   "allowedFiletypes": [
     ".js",
     ".script",
-    ".txt"
+    ".txt",
+    ".json"
   ],
   "allowDeletingFiles": false,
   "port": 12525,
@@ -10,7 +11,7 @@
   "quiet": false,
   "dry": false,
   "definitionFile": {
-    "update": false,
+    "update": true,
     "location": "NetscriptDefinitions.d.ts"
   },
   "pushAllOnConnection": true

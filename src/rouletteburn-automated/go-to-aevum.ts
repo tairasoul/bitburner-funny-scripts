@@ -2,7 +2,14 @@ import ns from "@ns";
 
 export async function aevum(ns: ns.NS) {
     const doc = eval("document") as Document;
-    const elems = doc.querySelectorAll('.jss84');
+    const buttons = doc.querySelectorAll("div.MuiButtonBase-root");
+
+    buttons.forEach(div => {
+        if (Array.from(div.querySelectorAll('*')).some(element => element.textContent?.includes('Travel'))) {
+            (div as HTMLElement).click();
+        }
+    });
+    const elems = doc.querySelectorAll('span');
     let element: HTMLElement | undefined;
     elems.forEach((elem) => {
         if (elem.textContent?.trim() == "A") {
@@ -17,10 +24,6 @@ export async function aevum(ns: ns.NS) {
             await ns.grow("n00dles");
             await ns.weaken("n00dles");
         }
-    }
-    const travelButton = doc.querySelector('div.MuiButtonBase-root.MuiListItem-root.jss23.MuiListItem-gutters.MuiListItem-padding.MuiListItem-button.jss22.css-1kk0p5e')
-    if (travelButton) {
-        (travelButton as HTMLElement).click();
     }
     if (element) element.click();
 }
