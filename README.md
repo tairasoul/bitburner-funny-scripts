@@ -8,6 +8,11 @@ Current contents:
     - Automates the usage of [rouletteburn](https://github.com/paulcdejean/rouletteburn), simulating trusted clicks.
     - Stops rouletteburn, moves you back to the terminal and stops itself once you reach the profit limit.
 
+- Infil cheating (src/infil-cheating)
+    - An attempt at a way to cheat at infiltrating a company.
+    - A lot of flaws, doesn't work very well sometimes.
+    - May need to try to spoof isTrusted in most cases.
+
 - Port registry (src/services/port-registry.ts)
     - This assigns ports and keeps track of which PIDs use which ports (as long as they tell the registry.)
     - Also can assign the first x available ports to a script.

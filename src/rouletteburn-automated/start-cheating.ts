@@ -1,5 +1,5 @@
 import ns from "@ns";
-import { exploit } from "/rouletteburn-automated/game/get-game";
+import { exploit } from "/game/get-game";
 
 function extractNumberFromString(str: string) {
     const numericStr = str.replace(/\D/g, '');
@@ -106,7 +106,7 @@ export async function cheat(ns: ns.NS) {
     if (targetElement) {
         while (true) {
             const game = await exploit();
-            if (game.moneySourceA.casino > 10e9) {
+            if (game.getCasinoWinnings() > 10e9) {
                 ns.kill(pid);
 
                 divsWithRoleButton.forEach(div => {
