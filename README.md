@@ -10,7 +10,7 @@ Current contents:
 
 - Infil cheating (src/infil-cheating)
     - An attempt at a way to cheat at infiltrating a company.
-    - A lot of flaws, doesn't work very well sometimes.
+    - A lot of flaws, barely works in its current state.
     - May need to try to spoof isTrusted in most cases.
 
 - Port registry (src/services/port-registry.ts)
