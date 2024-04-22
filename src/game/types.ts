@@ -20,7 +20,7 @@ export interface GAME {
     hasTixApiAccess: boolean;
     hasTorRouter(): boolean;
     hasWseAccount: boolean;
-    getHomeServer(): Server;
+    getHomeComputer(): Server;
     getCurrentServer(): Server;
     getCasinoWinnings(): number;
     getUpgradeHomeCoresCost(): number;

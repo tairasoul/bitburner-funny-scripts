@@ -67,7 +67,7 @@ function clickBypassed(element: HTMLElement) {
 export async function cheat(ns: ns.NS) {
     ns.disableLog("sleep");
     const doc = eval("document") as Document;
-    const pid = ns.run("/rouletteburn-automated/burn/rouletteburn.js")
+    const pid = ns.run("rouletteburn.js")
     await ns.sleep(1500);
     const tailWindows = doc.querySelectorAll("div.react-resizable")
     let targetElement: HTMLElement | undefined;
@@ -75,7 +75,6 @@ export async function cheat(ns: ns.NS) {
         const children = window.querySelectorAll(":scope > *");
         children.forEach((childElement) => {
             if (childElement.textContent?.trim().includes("rouletteburn.js")) {
-                ns.tprint(childElement.textContent)
                 targetElement = window as HTMLElement;
                 return;
             }
@@ -114,8 +113,8 @@ export async function cheat(ns: ns.NS) {
                 break;
             }
             await ns.sleep(1);
-            const rouletteBurn = targetElement.querySelector('span')?.querySelector("table") as HTMLTableElement;
-            const rouletteWindow = doc.querySelector("#root > div.MuiBox-root > div.jss1.MuiBox-root") as HTMLDivElement;
+            const rouletteBurn = targetElement.querySelector("table") as HTMLTableElement;
+            const rouletteWindow = doc.querySelector("#root > div.MuiBox-root > div.MuiBox-root") as HTMLDivElement;
             const roulette = rouletteWindow?.querySelector("table") as HTMLTableElement;
             if (getGreenTile(rouletteBurn) == null) {
                 const burnTile = getTile(1, rouletteBurn);
