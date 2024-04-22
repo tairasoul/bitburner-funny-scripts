@@ -10,7 +10,7 @@
   "quiet": false,
   "dry": false,
   "definitionFile": {
-    "update": true,
+    "update": false,
     "location": "NetscriptDefinitions.d.ts"
   },
   "pushAllOnConnection": true

@@ -4002,7 +4002,7 @@ export interface Go {
    *
    * @returns a promise that contains if your last move was valid and successful, the opponent move's x and y coordinates (or pass) in response, or an indication if the game has ended
    */
-  opponentNextTurn(logOpponentMove: boolean = true): Promise<{
+  opponentNextTurn(logOpponentMove: boolean): Promise<{
     type: "move" | "pass" | "gameOver";
     x: number | null;
     y: number | null;

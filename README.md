@@ -4,6 +4,10 @@ Simply scripts I use for Bitburner.
 
 Current contents:
 
+- Casino cheat script (src/rouletteburn-automated)
+    - Automates the usage of [rouletteburn](https://github.com/paulcdejean/rouletteburn), simulating trusted clicks.
+    - Stops rouletteburn, moves you back to the terminal and stops itself once you reach the profit limit.
+
 - Port registry (src/services/port-registry.ts)
     - This assigns ports and keeps track of which PIDs use which ports (as long as they tell the registry.)
     - Also can assign the first x available ports to a script.
