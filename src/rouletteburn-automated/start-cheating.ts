@@ -108,8 +108,12 @@ export async function cheat(ns: ns.NS) {
             const game = await exploit();
             if (game.moneySourceA.casino > 10e9) {
                 ns.kill(pid);
-                const terminal = doc.querySelector("#root > div.MuiBox-root > div.MuiDrawer-root.MuiDrawer-docked > div > ul > div:nth-child(2) > div > div > div:nth-child(1)");
-                (terminal as HTMLElement).click();
+
+                divsWithRoleButton.forEach(div => {
+                    if (Array.from(div.querySelectorAll('*')).some(element => element.textContent?.includes('Terminal'))) {
+                        (div as HTMLElement).click();
+                    }
+                });
                 break;
             }
             await ns.sleep(1);
