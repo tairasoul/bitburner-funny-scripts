@@ -1,9 +1,11 @@
 import ns from "@ns";
 import { gainAccess } from "/infect/utils";
 import { exploit } from "/game/get-game";
+import PortCommunicator from "/service-communicators/port-registry";
 
 export async function aevum(ns: ns.NS) {
     const doc = eval("document") as Document;
+    const comms = new PortCommunicator(ns);
     const game = await exploit();
     if (game.money < 200000) {
         const hacking = game.skills.hacking;
@@ -13,13 +15,16 @@ export async function aevum(ns: ns.NS) {
             if (hacking >= skillRequired) {
                 const accessGained = await gainAccess(ns, server);
                 if (accessGained.nuke) {
+                    const port = await comms.assignFirstAvailable(1);
                     ns.toast(`money too low, hacking ${server} until we have enough money!`, "error", 3000);
                     const ram = ns.getServerMaxRam(ns.getHostname()) - ns.getServerUsedRam(ns.getHostname());
                     const hackUsage = ns.getScriptRam("/rouletteburn-automated/goto/gain-money.js");
                     const threads = Math.floor(ram / hackUsage);
-                    const pid = ns.run("/rouletteburn-automated/goto/gain-money.js", threads, server);;
-                    while (ns.isRunning(pid))
-                        await ns.sleep(1);
+                    ns.run("/rouletteburn-automated/goto/gain-money.js", threads, server, port.assignedPorts[0]);
+                    const handle = ns.getPortHandle(port.assignedPorts[0]);
+                    await handle.nextWrite();
+                    handle.clear();
+                    await comms.unassignPorts(port.assignedPorts);
                     break;
                 }
             }
