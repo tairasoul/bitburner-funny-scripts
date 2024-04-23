@@ -71,11 +71,11 @@ export async function cheat(ns: ns.NS) {
     await ns.sleep(1500);
     const tailWindows = doc.querySelectorAll("div.react-resizable")
     let targetElement: HTMLElement | undefined;
-    tailWindows.forEach((window) => {
-        const children = window.querySelectorAll(":scope > *");
+    tailWindows.forEach((w) => {
+        const children = w.querySelectorAll(":scope > *");
         children.forEach((childElement) => {
             if (childElement.textContent?.trim().includes("rouletteburn.js")) {
-                targetElement = window as HTMLElement;
+                targetElement = w as HTMLElement;
                 return;
             }
         });
