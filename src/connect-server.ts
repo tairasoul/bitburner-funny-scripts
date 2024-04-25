@@ -1,36 +1,47 @@
 import ns from "@ns";
-import { ServerInfo, mapServers } from "./infect/utils";
+import { getReactKey } from "/react-handlers/get_react_key"
 
-function findServerPath(server: ServerInfo, targetName: string, currentPath: string[] = []): string[] | null {
-    if (server.name === targetName) {
-        return [...currentPath, server.name];
-    }
+function recursiveScan(ns: ns.NS, parent: string, server: string, target: string, route: string[]) {
+    const children = ns.scan(server);
+    for (let child of children) {
+        if (parent == child) {
+            continue;
+        }
+        if (child == target) {
+            route.unshift(child);
+            route.unshift(server);
+            return true;
+        }
 
-    for (const subServer of server.sub_servers) {
-        const path = findServerPath(subServer, targetName, [...currentPath, server.name]);
-        if (path) {
-            return path;
+        if (recursiveScan(ns, server, child, target, route)) {
+            route.unshift(server);
+            return true;
         }
     }
-
-    return null;
+    return false;
 }
 
 export async function main(ns: ns.NS) {
     const server = ns.args[0] as string;
     const doc = eval("document")
     const terminal = doc.querySelector("#terminal-input") as HTMLInputElement;
-    await ns.sleep(1000);
-    const mapped = await mapServers(ns);
-    for (const map of mapped) {
-        const res = findServerPath(map, server)
-        if (res) {
-            let str = "";
-            for (const path of res) {
-                str += `connect ${path};`
-            }
-            terminal.value = str;
-            break;
-        }
+    const route: string[] = [];
+    recursiveScan(ns, '', 'home', server, route);
+    const props = getReactKey(terminal, "Props$");
+    // @ts-ignore
+    const onChange = terminal[props].onChange;
+    let str = "";
+    for (const path of route) {
+        str += `connect ${path};`
     }
+    onChange({target: {value: str}})
+    await ns.sleep(20);
+    const event = {
+        preventDefault: () => {},
+        key: "Enter",
+        isTrusted: true
+    }
+    // @ts-ignore
+    const keyDown = terminal[props].onKeyDown;
+    await keyDown(event);
 }
