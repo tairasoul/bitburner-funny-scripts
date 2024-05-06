@@ -39,18 +39,18 @@ function generateInstructions(currentPosition: [number, number], targetPosition:
 
     while (currentRow !== targetRow || currentColumn !== targetColumn) {
         if (currentRow < targetRow) {
-            instructions.push("ArrowDown");
+            instructions.push("s");
             currentRow++;
         } else if (currentRow > targetRow) {
-            instructions.push("ArrowUp");
+            instructions.push("w");
             currentRow--;
         }
 
         if (currentColumn < targetColumn) {
-            instructions.push("ArrowRight");
+            instructions.push("d");
             currentColumn++;
         } else if (currentColumn > targetColumn) {
-            instructions.push("ArrowLeft");
+            instructions.push("a");
             currentColumn--;
         }
     }
@@ -105,7 +105,7 @@ export async function SolveMinefield(ns: NS) {
 
     let current: [number, number] = [0, 0];
     for (const position of positions) {
-        await ns.sleep(50);
+        await ns.sleep(200);
         const instructions = generateInstructions(current, position);
         console.log(current, position, instructions)
         current = position;
@@ -120,6 +120,7 @@ export async function SolveMinefield(ns: NS) {
                 bubbles: true,
                 cancelable: true
             }
+            console.log(event);
             keyDown(event);
         }
     }

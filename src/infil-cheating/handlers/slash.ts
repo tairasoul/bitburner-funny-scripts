@@ -10,18 +10,28 @@ export async function SolveSlash(ns: NS) {
         if (answerElement.querySelector(":nth-child(2)")?.textContent?.includes("Preparing"))
             break;
     }
+    await ns.sleep(100);
     console.log("attacking!!");
     // @ts-ignore
-    const keyDown = answerElement[reactKey].children[5].props.onKeyDown;
+    //const keyDown = answerElement[reactKey].children[5].props.onKeyDown;
+    // @ts-ignore
+    //const oldFailure = answerElement[reactKey].children[5].props.onFailure;
+    // @ts-ignore
+    /*answerElement[reactKey].children[5].props.onFailure = () => {
+        oldFailure({automated: false});
+    };
     const event = {
         preventDefault: () => {},
         key: " ",
-        isTrusted: true,
-        target: answerElement,
-        currentTarget: answerElement,
-        bubbles: true,
-        cancelable: true
+        isTrusted: true
     }
     await ns.sleep(200);
-    keyDown(event);
+    keyDown(event);*/
+    const event = new KeyboardEvent("keydown", {
+        key: " "
+    });
+
+    Object.defineProperty(event, 'isTrusted', {value: true});
+    console.log(event);
+    document.dispatchEvent(event);
 }

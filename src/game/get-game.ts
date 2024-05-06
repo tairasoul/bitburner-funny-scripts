@@ -22,7 +22,7 @@ export async function exploit() {
           }
         });
         optionsButton.click();
-        const saveButton = doc.querySelector("#root > div.MuiBox-root > div.jss1.MuiBox-root > div > div > div.MuiBox-root > div.MuiBox-root > button.MuiButtonBase-root.MuiButton-root.MuiButton-text.MuiButton-textPrimary.MuiButton-sizeMedium.MuiButton-textSizeMedium.MuiButton-root.MuiButton-text.MuiButton-textPrimary.MuiButton-sizeMedium.MuiButton-textSizeMedium") as HTMLElement;
+        const saveButton = doc.querySelector("#root > div.MuiBox-root > div.MuiBox-root > div > div > div.MuiBox-root > div.MuiBox-root > button.MuiButtonBase-root.MuiButton-root.MuiButton-text.MuiButton-textPrimary.MuiButton-sizeMedium.MuiButton-textSizeMedium.MuiButton-root.MuiButton-text.MuiButton-textPrimary.MuiButton-sizeMedium.MuiButton-textSizeMedium") as HTMLElement;
         saveButton.click();
         const terminal = doc.querySelector("#root > div.MuiBox-root > div.MuiDrawer-root.MuiDrawer-docked > div > ul > div:nth-child(2) > div > div > div:nth-child(1)") as HTMLElement;
         terminal.click();
