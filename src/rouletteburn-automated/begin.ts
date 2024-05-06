@@ -7,15 +7,20 @@ export async function main(ns: NS) {
     if (!ns.fileExists("rouletteburn.js"))
         await download(ns);
     const doc = eval("document") as Document;
-    const divsWithRoleButton = doc.querySelectorAll('div[role="button"]');
-    divsWithRoleButton.forEach(div => {
-        if (Array.from(div.querySelectorAll('*')).some(element => element.textContent?.includes('City'))) {
-            (div as HTMLElement).click();
-        }
-    });
+    clickText("City", 'div[role="button"]');
     const gameWindow = doc.querySelector("#root > div.MuiBox-root > div.MuiBox-root") as HTMLDivElement;
     const city = gameWindow.querySelector(':nth-child(1)')?.textContent as string;
     if (city.trim() != "Aevum")
         await aevum(ns);
     await cheat(ns)
+}
+
+export function clickText(text: string, selector: string) {
+    const doc = eval("document") as Document;
+    const divsWithRoleButton = doc.querySelectorAll(selector);
+    divsWithRoleButton.forEach(div => {
+        if (Array.from(div.querySelectorAll('*')).some(element => element.textContent?.includes(text))) {
+            (div as HTMLElement).click();
+        }
+    });
 }

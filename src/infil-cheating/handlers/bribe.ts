@@ -29,9 +29,15 @@ export async function SolveBribe(ns: NS) {
     const answerElement = doc.querySelector("#root > div.MuiBox-root > div > div > div:nth-child(3)") as HTMLElement;
     const reactKey = getReactKey(answerElement, "Props$")
     // @ts-ignore
-    const keyDown = answerElement[reactKey].children[1].props.onKeyDown;
+    const oldFailure = answerElement[reactKey].children[1].props.onFailure;
+    // @ts-ignore
+    answerElement[reactKey].children[1].props.onFailure = () => {
+        oldFailure({automated: false});
+    };
     while (true) {
-        await ns.sleep(100);
+        await ns.sleep(300);
+        // @ts-ignore
+        const keyDown = answerElement[reactKey].children[1].props.onKeyDown;
         const text = answerElement.querySelector(":nth-child(3)")?.textContent as string;
         console.log(text);
         if (positive.includes(text)) {
@@ -47,16 +53,17 @@ export async function SolveBribe(ns: NS) {
             keyDown(event);
             break;
         }
-        await ns.sleep(100);
+        await ns.sleep(300);
         const event = {
             preventDefault: () => {},
-            key: "ArrowUp",
+            key: "w",
             isTrusted: true,
             target: answerElement,
             currentTarget: answerElement,
             bubbles: true,
             cancelable: true
         }
+        console.log(event);
         keyDown(event);
     }
 }

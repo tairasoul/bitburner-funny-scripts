@@ -1,5 +1,6 @@
 import ns from "@ns";
 import { exploit } from "/game/get-game";
+import { clickText } from "./begin";
 
 function extractNumberFromString(str: string) {
     const numericStr = str.replace(/\D/g, '');
@@ -81,13 +82,7 @@ export async function cheat(ns: ns.NS) {
         });
     });
 
-    const divsWithRoleButton = doc.querySelectorAll('div[role="button"]');
-
-    divsWithRoleButton.forEach(div => {
-        if (Array.from(div.querySelectorAll('*')).some(element => element.textContent?.includes('City'))) {
-            (div as HTMLElement).click();
-        }
-    });
+    clickText("City", 'div[role="button"]')
 
     await ns.sleep(1000);
 
@@ -97,7 +92,7 @@ export async function cheat(ns: ns.NS) {
 
     await ns.sleep(1000);
 
-    const playRoulette = doc.querySelector("#root > div.MuiBox-root > div.jss1.MuiBox-root > div > button:nth-child(3)") as HTMLElement;
+    const playRoulette = doc.querySelector("#root > div.MuiBox-root > div.MuiBox-root > div > button:nth-child(3)") as HTMLElement;
 
     playRoulette.click();
 
@@ -109,11 +104,7 @@ export async function cheat(ns: ns.NS) {
             if (game.getCasinoWinnings() > 10e9) {
                 ns.kill(pid);
 
-                divsWithRoleButton.forEach(div => {
-                    if (Array.from(div.querySelectorAll('*')).some(element => element.textContent?.includes('Terminal'))) {
-                        (div as HTMLElement).click();
-                    }
-                });
+                clickText("Terminal", 'div[role="button"]')
                 break;
             }
             await ns.sleep(1);

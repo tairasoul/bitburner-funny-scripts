@@ -10,6 +10,12 @@ export async function SolveBracket(ns: NS) {
     const text = children[1].props.children[0] as string;
     console.log(text);
     const keyDown = children[2].props.onKeyDown;
+    // @ts-ignore
+    const oldFailure = children[2].props.onFailure;
+    // @ts-ignore
+    children[2].props.onFailure = () => {
+        oldFailure({automated: false});
+    };
     const brackets = text.split("").reverse() as ("<" | "[" | "{" | "(")[];
     const associations = {
         "<": ">",

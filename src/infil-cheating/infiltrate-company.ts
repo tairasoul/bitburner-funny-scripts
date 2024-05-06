@@ -77,12 +77,16 @@ export async function main(ns: NS) {
         const associatedFunction = associations[associatedName]
         await associatedFunction(ns);
         const text = doc.querySelector("#root > div.MuiBox-root > div > div > div:nth-child(1) > h5")?.textContent as string;
-        const split = text.split(" / ");
-        const split1 = split[0];
-        const split2 = split[1];
-        const num1 = extractNumberFromString(split1);
-        const num2 = extractNumberFromString(split2);
-        if (num1 == num2)
+        if (text){
+            const split = text.split(" / ");
+            const split1 = split[0];
+            const split2 = split[1];
+            const num1 = extractNumberFromString(split1);
+            const num2 = extractNumberFromString(split2);
+            if (num1 == num2)
+                break;
+        }
+        else
             break;
     }
 }

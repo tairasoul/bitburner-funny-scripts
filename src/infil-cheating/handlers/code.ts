@@ -1,3 +1,4 @@
+import { NS } from "@ns";
 import { getReactKey } from "/react-handlers/get_react_key";
 
 const arrows = {
@@ -8,13 +9,13 @@ const arrows = {
 }
 
 enum arrowKeys {
-    Up = "ArrowUp",
-    Down = "ArrowDown",
-    Left = "ArrowLeft",
-    Right = "ArrowRight"
+    Up = "w",
+    Down = "s",
+    Left = "a",
+    Right = "d"
 }
 
-export async function SolveCode() {
+export async function SolveCode(ns: NS) {
     const doc = eval("document") as Document;
     const answerElement = doc.querySelector("#root > div.MuiBox-root > div > div > div:nth-child(3)") as HTMLElement;
     const arrowContainer = answerElement.querySelector("div") as HTMLElement;
@@ -22,11 +23,20 @@ export async function SolveCode() {
     const reactKey = getReactKey(answerElement, "Props$");
     // @ts-ignore
     const keyDown = answerElement[reactKey].children[2].props.onKeyDown;
+    // @ts-ignore
+    const oldFailure = answerElement[reactKey].children[2].props.onFailure;
+    // @ts-ignore
+    answerElement[reactKey].children[2].props.onFailure = () => {
+        oldFailure({automated: false});
+    };
     for (let i = 1; i <= arrowSpans.length; i++) {
         const selector = `:nth-child(${i})`;
+        console.log(selector);
         const arrowElement = arrowContainer.querySelector(selector) as HTMLElement;
         const text = arrowElement.textContent as string;
-        switch (text) {
+        await ns.sleep(200);
+        console.log(text.trim());
+        switch (text.trim()) {
             case arrows.up:
                 const upEvent = {
                     preventDefault: () => {},
